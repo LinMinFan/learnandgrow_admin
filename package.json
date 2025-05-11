@@ -20,6 +20,7 @@
     "dependencies": {
         "@fortawesome/fontawesome-free": "^6.7.2",
         "@vueuse/core": "^13.1.0",
+        "chart.js": "^4.4.9",
         "simple-datatables": "^10.0.0"
     }
 }

@@ -18,7 +18,6 @@ class DashboardController extends Controller
         ];
 
         return Inertia::render('Dashboard', [
-            'title' => '控制台',
             'user' => $userData,
         ]);
     }

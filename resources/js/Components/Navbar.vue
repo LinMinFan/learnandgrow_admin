@@ -1,31 +1,30 @@
 <script setup>
-    import { ref } from 'vue'
+    import { ref, defineEmits  } from 'vue'
     import { onClickOutside  } from '@vueuse/core'
     import { Link } from '@inertiajs/vue3'
     import NavDropdownLink from '@/Components/NavDropdownLink.vue';
-    // simple-datatables
-    import 'simple-datatables/dist/style.css'
-    // fontawesome
-    import '@fortawesome/fontawesome-free/css/all.min.css'
 
     const open = ref(false)
     const dropdownRef = ref(null)
+    const emit = defineEmits(['toggleSidebar'])
 
     onClickOutside (dropdownRef, () => open.value = false)
 </script>
 
 <template>
-    <nav class="bg-gray-800 text-white px-4 py-3 flex items-center justify-between">
+    <nav class="bg-gray-800 text-white px-4 py-3 flex items-center h-16 z-50">
         <!-- Navbar Brand -->
-        <Link class="text-xl font-semibold" href="/">控制台</Link>
+        <Link class="text-xl font-semibold pl-4 order-1 min-w-[100px] lg:order-1 sm:w-[225px]" href="/">控制台</Link>
 
         <!-- Sidebar Toggle -->
-        <button class="text-white lg:hidden mr-4 focus:outline-none" id="sidebarToggle">
-            <i class="fas fa-bars"></i>
-        </button>
+        <div class="ml-0 mr-4 focus:outline-none order-3 min-w-[30px] lg:ml-4  lg:order-2 lg:min-w-[225px]">
+            <button class="text-white" @click="emit('toggleSidebar')">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
 
         <!-- Navbar Dropdown -->
-        <div class="relative px-2 mr-6" ref="dropdownRef">
+        <div class="relative px-2 mr-6 order-2 lg:order-3 ml-auto min-w-[50px]" ref="dropdownRef">
             <button
               class="focus:outline-none"
               @click="open = !open"
