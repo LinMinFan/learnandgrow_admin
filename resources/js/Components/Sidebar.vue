@@ -1,20 +1,26 @@
 <script setup>
-    import { ref, reactive, watchEffect } from 'vue'
+    import { ref, reactive, watchEffect, onMounted } from 'vue'
     import { onClickOutside  } from '@vueuse/core'
-    import { Link } from '@inertiajs/vue3'
+    import { Link, usePage  } from '@inertiajs/vue3';
 
     defineProps({
         isSidebarOpen: Boolean,
     })
 
-    const expanded = reactive({
-      charts: false,
-      tables: false,
-    })
+    const page = usePage()
+    const menus = page.props.menus ?? []
 
-    function toggle(section) {
-      expanded[section] = !expanded[section]
+    const expanded = reactive({})
+
+    function toggle(id) {
+      expanded[id] = !expanded[id]
     }
+
+    onMounted(() => {
+        menus.forEach(menu => {
+            expanded[menu.id] = false
+        })
+    })
 
 </script>
 
@@ -39,65 +45,39 @@
                     </Link>
                 </div> -->
 
-                <div>
-                    <div class="text-xs uppercase text-gray-400 mb-2"></div>
-                    <Link href="/" class="flex items-center space-x-2 text-sm hover:bg-gray-700 px-2 py-2 rounded">
-                        <i class="fas fa-tachometer-alt"></i>
-                        <span>儀錶板</span>
-                    </Link>
-                </div>
-  
-                <div>
-                    <div class="text-xs uppercase text-gray-400 mb-2">頁面管理</div>
-                    <Link href="/charts" class="flex items-center space-x-2 text-sm hover:bg-gray-700 px-2 py-2 rounded">
-                        <i class="fas fa-chart-bar"></i>
-                        <span>Charts</span>
-                    </Link>
-                    <Link href="/tables" class="flex items-center space-x-2 text-sm hover:bg-gray-700 px-2 py-2 rounded">
-                        <i class="fas fa-table"></i>
-                        <span>Tables</span>
-                    </Link>
-                </div>
-
-                <!-- 可展開選單項目範例 -->
-                <!-- <div>
-                    <button 
-                        @click="toggle('admin')"
-                        class="w-full px-2 py-2 flex items-center space-x-2 px-2 hover:bg-gray-700 rounded"
-                    >
-                        <i class="fas fa-sliders-h"></i>
-                        <span>網站管理</span>
-                        <i :class="expanded.admin ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
-                    </button>
-                    <div v-show="expanded.admin" class="ml-4 mt-1">
-                        <Link href="/charts/line" class="block space-x-2 px-2 py-1 hover:bg-gray-700 rounded">
-                            <i class="fas fa-cogs"></i>
-                            <span>網站設定</span>
-                        </Link>
+                <!-- 動態選單 -->
+                <div v-for="menu in menus" :key="menu.id">
+                    <!-- 有子選單 -->
+                    <div v-if="menu.children && menu.children.length">
+                        <button 
+                            @click="toggle(menu.id)"
+                            class="w-full px-2 py-2 flex items-center space-x-2 hover:bg-gray-700 rounded"
+                        >
+                            <i :class="menu.icon"></i>
+                            <span>{{ menu.title }}</span>
+                            <i :class="expanded[menu.id] ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
+                        </button>
+                        <div v-show="expanded[menu.id]" class="ml-4 mt-1">
+                            <Link
+                                v-for="child in menu.children"
+                                :key="child.id"
+                                :href="child.route"
+                                class="block space-x-2 px-2 py-1 hover:bg-gray-700 rounded"
+                            >
+                                <i :class="child.icon"></i>
+                                <span>{{ child.title }}</span>
+                            </Link>
+                        </div>
                     </div>
-                </div> -->
 
-                <div>
-                    <button 
-                        @click="toggle('admin')"
-                        class="w-full px-2 py-2 flex items-center space-x-2 px-2 hover:bg-gray-700 rounded"
-                    >
-                        <i class="fas fa-sliders-h"></i>
-                        <span>網站管理</span>
-                        <i :class="expanded.admin ? 'fas fa-chevron-up' : 'fas fa-chevron-down'"></i>
-                    </button>
-                    <div v-show="expanded.admin" class="ml-4 mt-1">
-                        <Link href="/charts/line" class="block space-x-2 px-2 py-1 hover:bg-gray-700 rounded">
-                            <i class="fas fa-cogs"></i>
-                            <span>網站設定</span>
-                        </Link>
-                        <Link href="/charts/bar" class="block space-x-2 px-2 py-1 hover:bg-gray-700 rounded">
-                            <i class="fas fa-user-cog"></i>
-                            <span>帳號管理</span>
-                        </Link>
-                        <Link href="/charts/bar" class="block space-x-2 px-2 py-1 hover:bg-gray-700 rounded">
-                            <i class="fas fa-user-shield"></i>
-                            <span>權限設定</span>
+                    <!-- 沒有子選單 -->
+                    <div v-else>
+                        <Link
+                            :href="menu.route"
+                            class="flex items-center space-x-2 text-sm hover:bg-gray-700 px-2 py-2 rounded"
+                        >
+                            <i :class="menu.icon"></i>
+                            <span>{{ menu.title }}</span>
                         </Link>
                     </div>
                 </div>

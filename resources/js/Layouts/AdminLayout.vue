@@ -21,7 +21,7 @@
     })
 
     defineProps({
-        user: Object,
+
     })
 </script>
 

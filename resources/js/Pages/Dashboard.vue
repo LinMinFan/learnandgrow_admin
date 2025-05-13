@@ -6,7 +6,7 @@ import { useIntervalFn } from '@vueuse/core'
 import Chart from 'chart.js/auto'
 
 defineProps({
-    user: Object,
+    
 })
 
 const stats = [
@@ -62,7 +62,7 @@ onMounted(() => {
 </script>
 
 <template>
-    <AdminLayout :user="user">
+    <AdminLayout>
         <div class="px-4 py-6">
             <h1 class="text-2xl font-bold mb-2">儀錶板</h1>
             <nav class="text-sm text-gray-500 mb-6">

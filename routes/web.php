@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MenuController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,7 +40,20 @@ Route::get('/', function (): RedirectResponse {
 })->middleware(['auth', 'verified'])->name('dashboard'); */
 
 Route::middleware(['auth', 'verified'])->group(function () {
+    // 儀表板
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // 頁面管理
+
+
+    // 文章管理
+
+    
+    // 網站管理
+    Route::get('/system/menus', [MenuController::class, 'index'])->name('system.menus');
+
+    // 角色和權限
+
 });
 
 Route::middleware('auth')->group(function () {
