@@ -1,5 +1,5 @@
 <script setup>
-    import { ref, reactive, watchEffect, onMounted } from 'vue'
+    import { ref, reactive, watchEffect, onMounted, computed } from 'vue'
     import { onClickOutside  } from '@vueuse/core'
     import { Link, usePage  } from '@inertiajs/vue3';
 
@@ -9,6 +9,7 @@
 
     const page = usePage()
     const menus = page.props.menus ?? []
+    const currentUrl = computed(() => page.url)
 
     const expanded = reactive({})
 
@@ -16,9 +17,20 @@
       expanded[id] = !expanded[id]
     }
 
+    // 判斷是否為 active 狀態：前綴比對
+    function isActive(route) {
+        if (!route) return false
+        return currentUrl.value.startsWith(route)
+    }
+
     onMounted(() => {
         menus.forEach(menu => {
             expanded[menu.id] = false
+
+            // 自動展開有子選單且當前頁面路由在其子選單裡的情況
+            if (menu.children?.some(child => isActive(child.route))) {
+                expanded[menu.id] = true
+            }
         })
     })
 
@@ -62,7 +74,10 @@
                                 v-for="child in menu.children"
                                 :key="child.id"
                                 :href="child.route"
-                                class="block space-x-2 px-2 py-1 hover:bg-gray-700 rounded"
+                                :class="[
+                                    'block space-x-2 px-2 py-1 hover:bg-gray-700 rounded',
+                                    isActive(child.route) ? 'bg-gray-900' : ''
+                                ]"
                             >
                                 <i :class="child.icon"></i>
                                 <span>{{ child.title }}</span>
@@ -74,7 +89,11 @@
                     <div v-else>
                         <Link
                             :href="menu.route"
-                            class="flex items-center space-x-2 text-sm hover:bg-gray-700 px-2 py-2 rounded"
+                            :class="[
+                                'flex items-center space-x-2 text-sm hover:bg-gray-700 px-2 py-2 rounded',
+                                isActive(menu.route) ? 'bg-gray-900' : ''
+                            ]"
+                            
                         >
                             <i :class="menu.icon"></i>
                             <span>{{ menu.title }}</span>

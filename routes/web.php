@@ -48,9 +48,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // 文章管理
 
-    
+
     // 網站管理
-    Route::get('/system/menus', [MenuController::class, 'index'])->name('system.menus');
+    Route::prefix('system')->group(function () {
+        Route::get('/menus', [MenuController::class, 'index'])->name('system.menus');
+        Route::get('/menus/create', [MenuController::class, 'create'])->name('system.menus.create');
+        Route::post('/menus', [MenuController::class, 'store'])->name('system.menus.store');
+        Route::post('/menus/sort', [MenuController::class, 'sort'])->name('menus.sort');
+    });
 
     // 角色和權限
 
