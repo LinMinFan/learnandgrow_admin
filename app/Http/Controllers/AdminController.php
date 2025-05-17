@@ -11,7 +11,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $userList = User::all();
+        $userList = User::with('roles')->get();
 
         return Inertia::render('Admin/Account/Index', compact('userList'));
     }

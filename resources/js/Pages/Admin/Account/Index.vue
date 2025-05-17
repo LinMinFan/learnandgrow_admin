@@ -51,6 +51,7 @@ onMounted(() => {
                             <th class="border px-4 py-2">ID</th>
                             <th class="border px-4 py-2">名稱</th>
                             <th class="border px-4 py-2">Email</th>
+                            <th class="border px-4 py-2">角色</th>
                             <th class="border px-4 py-2">操作</th>
                         </tr>
                     </thead>
@@ -59,6 +60,7 @@ onMounted(() => {
                             <td class="border px-4 py-2">{{ user.id }}</td>
                             <td class="border px-4 py-2">{{ user.name }}</td>
                             <td class="border px-4 py-2">{{ user.email }}</td>
+                            <td class="border px-4 py-2">{{ user.roles.map(role => role.name).join(', ') }}</td>
                             <td class="border px-4 py-2">
                                 <Link :href="`/system/users/${user.id}/edit`" class="text-blue-600 hover:underline">
                                     編輯
