@@ -3,6 +3,8 @@
     import { onClickOutside  } from '@vueuse/core'
     import { Link } from '@inertiajs/vue3'
     import NavDropdownLink from '@/Components/NavDropdownLink.vue';
+    import TopNotificationWrapper from '@/Components/TopNotificationWrapper.vue'
+    import BottomNotificationWrapper from '@/Components/BottomNotificationWrapper.vue'
 
     const open = ref(false)
     const dropdownRef = ref(null)
@@ -60,5 +62,12 @@
             </ul>
         </div>
     </nav>
+    <!-- 其他內容 -->
+    <div>
+        <TopNotificationWrapper />
+    </div>
+    <div>
+        <BottomNotificationWrapper />
+    </div>
 </template>
 

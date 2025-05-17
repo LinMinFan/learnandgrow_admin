@@ -52,7 +52,6 @@ class MenuController extends Controller
     {
         $sorted = $request->input('sorted');
 
-        Log::info('Sorted data:', $sorted);
         foreach ($sorted as $item) {
             Menu::where('id', $item['id'])->update([
                 'sort' => $item['sort'],
@@ -60,6 +59,6 @@ class MenuController extends Controller
             ]);
         }
     
-        return response()->json(['message' => '排序已更新']);
+        return response()->json(['success' => true], 200);
     }
 }

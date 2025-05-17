@@ -6,6 +6,7 @@ import { onClickOutside  } from '@vueuse/core'
 import cloneDeep from 'lodash/cloneDeep'
 import draggable from 'vuedraggable'
 import axios from 'axios'
+import { useNotification } from "@kyvg/vue3-notification";
 
 const props = defineProps({
     menuData: Array,
@@ -14,6 +15,8 @@ const props = defineProps({
 const menus = ref(cloneDeep(props.menuData)) // 深拷貝，避免直接修改 props
 
 const originalSorted = ref([])
+
+const { notify }  = useNotification()
 
 onMounted(() => {
     originalSorted.value = getSortedMenus()
@@ -61,10 +64,20 @@ const updateSortedMenus = () => {
     axios
         .post('/system/menus/sort', { sorted: current })
         .then(() => {
-            alert('排序已更新')
+            notify({
+                group: 'top',
+                text: '資料儲存完成！',
+                type: 'success',
+            })
             originalSorted.value = current // 更新原始參考值
         })
-        .catch(() => alert('排序更新失敗'))
+        .catch(() => {
+            notify({
+                group: 'top',
+                text: '資料儲存失敗！',
+                type: 'error',
+            })
+        })
 }
 
 </script>
@@ -119,7 +132,5 @@ const updateSortedMenus = () => {
 </template>
 
 <style scoped>
-:deep(select.datatable-selector) {
-    padding-right: 40px !important;
-}
+
 </style>
