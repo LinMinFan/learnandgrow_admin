@@ -14,7 +14,7 @@ const form = useForm({
 })
 
 function submit() {
-  form.post('/system/menus')
+  form.post('/system/menu')
 }
 </script>
 
@@ -55,7 +55,7 @@ function submit() {
 
       <div class="flex space-x-2">
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">儲存</button>
-        <Link href="/system/menus" class="text-gray-500 underline">返回列表</Link>
+        <Link href="/system/menu" class="text-gray-500 underline">返回列表</Link>
       </div>
     </form>
   </div>

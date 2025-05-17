@@ -20,14 +20,14 @@ class MenuController extends Controller
                     return $menu;
             });
 
-        return Inertia::render('System/Menus/Index', compact('menuData'));
+        return Inertia::render('System/Menu/Index', compact('menuData'));
     }
 
     public function create()
     {
         $parents = Menu::whereNull('parent_id')->get();
 
-        return Inertia::render('System/Menus/Create', [
+        return Inertia::render('System/Menu/Create', [
             'parents' => $parents
         ]);
     }
@@ -44,7 +44,7 @@ class MenuController extends Controller
 
         Menu::create($request->all());
 
-        return redirect()->route('system.menus')->with('success', '選單建立成功');
+        return redirect()->route('system.menu')->with('success', '選單建立成功');
     }
 
     // MenuController.php

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('route')->nullable()->comment('路由');
             $table->unsignedInteger('parent_id')->nullable()->comment('父選單ID');
             $table->unsignedInteger('sort')->default(0)->comment('排序');
+            $table->string('permission_name')->default('super admin')->comment('綁定權限');
             $table->foreign('parent_id')->references('id')->on('menus')->onDelete('cascade');
             $table->timestamps();
         });

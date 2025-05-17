@@ -56,4 +56,9 @@
         </div>
     </div>
 </template>
-  
+
+<style lang="postcss">
+select.datatable-selector {
+    @apply pl-4 pr-7;
+}
+</style>

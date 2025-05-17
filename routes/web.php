@@ -8,6 +8,7 @@ use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MenuController;
+use App\Http\Controllers\AdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,13 +52,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // 網站管理
     Route::prefix('system')->group(function () {
-        Route::get('/menus', [MenuController::class, 'index'])->name('system.menus');
-        Route::get('/menus/create', [MenuController::class, 'create'])->name('system.menus.create');
-        Route::post('/menus', [MenuController::class, 'store'])->name('system.menus.store');
-        Route::post('/menus/sort', [MenuController::class, 'sort'])->name('menus.sort');
+        Route::get('/menu', [MenuController::class, 'index'])->name('system.menu');
+        Route::get('/menu/create', [MenuController::class, 'create'])->name('system.menu.create');
+        Route::post('/menu', [MenuController::class, 'store'])->name('system.menu.store');
+        Route::post('/menu/sort', [MenuController::class, 'sort'])->name('menu.sort');
     });
 
     // 角色和權限
+    Route::prefix('admin')->group(function () {
+        Route::get('/account', [AdminController::class, 'index'])->name('admin.account');
+        Route::get('/account/create', [AdminController::class, 'create'])->name('admin.account.create');
+        Route::post('/account', [AdminController::class, 'store'])->name('admin.account.store');
+        Route::get('/role', [AdminController::class, 'role'])->name('admin.role');
+        Route::get('/permission', [AdminController::class, 'permission'])->name('admin.permission');
+    });
 
 });
 
