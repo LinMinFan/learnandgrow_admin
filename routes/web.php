@@ -9,6 +9,8 @@ use Inertia\Inertia;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MenuController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\RoleController;
+use App\Http\Controllers\PermissionController;
 
 /*
 |--------------------------------------------------------------------------
@@ -60,11 +62,18 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // 角色和權限
     Route::prefix('admin')->group(function () {
+        // 帳號
         Route::get('/account', [AdminController::class, 'index'])->name('admin.account');
         Route::get('/account/create', [AdminController::class, 'create'])->name('admin.account.create');
         Route::post('/account', [AdminController::class, 'store'])->name('admin.account.store');
-        Route::get('/role', [AdminController::class, 'role'])->name('admin.role');
-        Route::get('/permission', [AdminController::class, 'permission'])->name('admin.permission');
+        // 角色
+        Route::get('/role', [RoleController::class, 'index'])->name('admin.role');
+        Route::get('/role/create', [RoleController::class, 'create'])->name('admin.role.create');
+        Route::post('/role', [RoleController::class, 'store'])->name('admin.role.store');
+        Route::get('/role/edit/{id}', [RoleController::class, 'edit'])->name('admin.role.edit');
+        Route::post('/role/update/{id}', [RoleController::class, 'update'])->name('admin.role.update');
+        // 權限
+        Route::get('/permission', [PermissionController::class, 'index'])->name('admin.permission');
     });
 
 });

@@ -45,41 +45,63 @@ class UserDefaultSeeder extends Seeder
 
         // 建立預設權限
         $permissions = [
+            // 儀表板
             'view dashboard',
+
+            // 首頁配置
             'view index setting',
             'edit index setting',
         
+            // 文章類別
             'view post category',
             'create post category',
+            'store post category',
             'edit post category',
+            'update post category',
             'delete post category',
-        
+
+            // 文章
             'view post article',
             'create post article',
+            'store post article',
             'edit post article',
+            'update post article',
             'delete post article',
         
+            // 系統參數
             'view system config',
-            'edit system config',
+            'update system config',
         
+            // 後台選單
             'view system menu',
             'create system menu',
+            'store system menu',
             'edit system menu',
+            'update system menu',
             'delete system menu',
         
+            // 系統管理員
             'view admin account',
             'create admin account',
+            'store admin account',
             'edit admin account',
+            'update admin account',
             'delete admin account',
         
+            // 角色
             'view role',
             'create role',
+            'store role',
             'edit role',
+            'update role',
             'delete role',
         
+            // 權限
             'view permission',
             'create permission',
+            'store permission',
             'edit permission',
+            'update permission',
             'delete permission',
         ];
         

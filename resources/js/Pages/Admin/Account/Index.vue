@@ -26,6 +26,7 @@ onMounted(() => {
                 placeholder: "搜尋...",
                 perPage: "每頁顯示筆數",
                 noRows: "查無資料",
+                noResults: "查無搜尋結果",
                 info: "共 {rows} 筆資料，共 {pages} 頁",
             }
         })
