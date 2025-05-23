@@ -62,7 +62,7 @@ const updateSortedMenus = () => {
     }
 
     axios
-        .post('/system/menus/sort', { sorted: current })
+        .post(route('system.menu.sort'), { sorted: current })
         .then(() => {
             notify({
                 group: 'top',

@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Log;
 
 class RoleStoreRequest extends FormRequest
 {
@@ -21,10 +22,19 @@ class RoleStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        return [
-            'name' => 'required|string|unique:roles,name',
-            'permissions' => 'required|array|min:1',
-        ];
+        // 如果是編輯模式，則排除當前角色的名稱
+        if ($this->isMethod('put')) {
+            return [
+                'name' => 'required|string|unique:roles,name,' . $this->route('id'),
+                'permissions' => 'required|array|min:1',
+            ];
+        } else {
+            // 如果是新增模式，則不排除名稱
+            return [
+                'name' => 'required|string|unique:roles,name',
+                'permissions' => 'required|array|min:1',
+            ];
+        }
     }
 
     public function messages(): array

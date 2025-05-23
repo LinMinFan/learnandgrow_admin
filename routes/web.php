@@ -57,7 +57,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/menu', [MenuController::class, 'index'])->name('system.menu');
         Route::get('/menu/create', [MenuController::class, 'create'])->name('system.menu.create');
         Route::post('/menu', [MenuController::class, 'store'])->name('system.menu.store');
-        Route::post('/menu/sort', [MenuController::class, 'sort'])->name('menu.sort');
+        Route::post('/menu/sort', [MenuController::class, 'sort'])->name('system.menu.sort');
     });
 
     // 角色和權限
@@ -71,7 +71,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/role/create', [RoleController::class, 'create'])->name('admin.role.create');
         Route::post('/role', [RoleController::class, 'store'])->name('admin.role.store');
         Route::get('/role/edit/{id}', [RoleController::class, 'edit'])->name('admin.role.edit');
-        Route::post('/role/update/{id}', [RoleController::class, 'update'])->name('admin.role.update');
+        Route::put('/role/update/{id}', [RoleController::class, 'update'])->name('admin.role.update');
+        Route::delete('/role/destroy/{id}', [RoleController::class, 'destroy'])->name('admin.role.destroy');
         // 權限
         Route::get('/permission', [PermissionController::class, 'index'])->name('admin.permission');
     });

@@ -1,32 +1,74 @@
 <script setup>
+import get from 'lodash/get';
 import { Link, usePage, useForm, router  } from '@inertiajs/vue3';
-import { useNotification } from "@kyvg/vue3-notification";
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
+import { useTopGlobalNotify } from '@/Composables/useTopGlobalNotify'
 
 const props = defineProps({
-  role: {
-    type: Object,
-    default: () => ({ name: '', permissions: [] })
-  },
-  permissions: {
-    type: Array,
-    required: true
-  },
-  onSubmit: Function
+    type: {
+        type: String,
+        default: 'create'
+    },
+    role: {
+        type: Object,
+        default: () => ({ name: '', permissions: [] })
+    },
+    permissions: {
+        type: Array,
+        required: true
+    },
 })
 
+const { successNotify, errorNotify } = useTopGlobalNotify()
 const form = useForm({
   name: props.role.name || '',
   permissions: props.role.permissions || []
 })
 
 const submit = () => {
-  if (!form.name.trim()) {
-    form.errors.name = '角色名稱為必填';
-    return;
-  }
-  props.onSubmit(form);
+    if (!form.name.trim()) {
+        form.errors.name = '角色名稱為必填';
+        return;
+    }
+
+    const payload = {
+        name: form.name,
+        permissions: form.permissions,
+    };
+
+    const url = props.type === 'create'
+        ? route('admin.role.store')
+        : route('admin.role.update', props.role.id);
+
+    const method = props.type === 'create' ? 'post' : 'put';
+    
+    axios[method](url, payload)
+        .then((res) => {
+            router.visit(route('admin.role'), {
+                data: {
+                    success: res.data.message
+                }
+            })
+        })
+        .catch((errors) => {
+            form.clearErrors();
+
+            const formErrors = get(errors, 'response.data.errors', {});
+            const message = get(errors, 'response.data.message', '發生錯誤，請稍後再試');
+
+            // 驗證錯誤
+            if (formErrors.name) {
+                form.errors.name = formErrors.name[0]
+            } else if (formErrors.permissions) {
+                form.errors.permissions = formErrors.permissions[0]
+            } else {
+                // 自訂錯誤訊息（例外處理訊息）
+                errorNotify(message)
+            }
+
+            
+        })
 }
 
 </script>
@@ -55,6 +97,8 @@ const submit = () => {
                 v-model="form.permissions"
                 :options="permissions"
                 :multiple="true"
+                :group-values="'permissions'"
+                :group-label="'group'"
                 :close-on-select="false"
                 :clear-on-select="false"
                 label="label"
@@ -86,7 +130,7 @@ const submit = () => {
 
         <div class="flex justify-end space-x-2">
             <Link :href="route('admin.role')" class="btn">取消</Link>
-            <button type="submit" class="btn btn-primary">儲存</button>
+            <button type="submit" class="btn btn-primary" :disabled="form.processing">儲存</button>
         </div>
     </form>
 </template>

@@ -4,11 +4,14 @@ namespace App\Enums;
 
 final class PermissionEnum
 {
+    // 儀錶板
     public const VIEW_DASHBOARD = 'view dashboard';
 
+    // 頁面管理
     public const VIEW_INDEX_SETTING = 'view index setting';
     public const EDIT_INDEX_SETTING = 'edit index setting';
 
+    // 文章類別管理
     public const VIEW_POST_CATEGORY = 'view post category';
     public const CREATE_POST_CATEGORY = 'create post category';
     public const STORE_POST_CATEGORY = 'store post category';
@@ -16,6 +19,7 @@ final class PermissionEnum
     public const UPDATE_POST_CATEGORY = 'update post category';
     public const DELETE_POST_CATEGORY = 'delete post category';
 
+    // 文章管理
     public const VIEW_POST_ARTICLE = 'view post article';
     public const CREATE_POST_ARTICLE = 'create post article';
     public const STORE_POST_ARTICLE = 'store post article';
@@ -23,9 +27,11 @@ final class PermissionEnum
     public const UPDATE_POST_ARTICLE = 'update post article';
     public const DELETE_POST_ARTICLE = 'delete post article';
 
+    // 網站管理
     public const VIEW_SYSTEM_CONFIG = 'view system config';
     public const UPDATE_SYSTEM_CONFIG = 'update system config';
 
+    // 選單管理
     public const VIEW_SYSTEM_MENU = 'view system menu';
     public const CREATE_SYSTEM_MENU = 'create system menu';
     public const STORE_SYSTEM_MENU = 'store system menu';
@@ -33,6 +39,7 @@ final class PermissionEnum
     public const UPDATE_SYSTEM_MENU = 'update system menu';
     public const DELETE_SYSTEM_MENU = 'delete system menu';
 
+    // 系統管理員
     public const VIEW_ADMIN_ACCOUNT = 'view admin account';
     public const CREATE_ADMIN_ACCOUNT = 'create admin account';
     public const STORE_ADMIN_ACCOUNT = 'store admin account';
@@ -40,6 +47,7 @@ final class PermissionEnum
     public const UPDATE_ADMIN_ACCOUNT = 'update admin account';
     public const DELETE_ADMIN_ACCOUNT = 'delete admin account';
 
+    // 角色管理
     public const VIEW_ROLE = 'view role';
     public const CREATE_ROLE = 'create role';
     public const STORE_ROLE = 'store role';
@@ -47,6 +55,7 @@ final class PermissionEnum
     public const UPDATE_ROLE = 'update role';
     public const DELETE_ROLE = 'delete role';
 
+    // 權限管理
     public const VIEW_PERMISSION = 'view permission';
     public const CREATE_PERMISSION = 'create permission';
     public const STORE_PERMISSION = 'store permission';
@@ -119,4 +128,70 @@ final class PermissionEnum
     {
         return self::labels()[$permission] ?? $permission;
     }
+
+    public static function groupedLabels(): array
+    {
+        return [
+            '儀錶板' => [
+                self::VIEW_DASHBOARD => self::label(self::VIEW_DASHBOARD),
+            ],
+            '首頁管理' => [
+                self::VIEW_INDEX_SETTING => self::label(self::VIEW_INDEX_SETTING),
+                self::EDIT_INDEX_SETTING => self::label(self::EDIT_INDEX_SETTING),
+            ],
+            '文章分類管理' => [
+                self::VIEW_POST_CATEGORY => self::label(self::VIEW_POST_CATEGORY),
+                self::CREATE_POST_CATEGORY => self::label(self::CREATE_POST_CATEGORY),
+                self::STORE_POST_CATEGORY => self::label(self::STORE_POST_CATEGORY),
+                self::EDIT_POST_CATEGORY => self::label(self::EDIT_POST_CATEGORY),
+                self::UPDATE_POST_CATEGORY => self::label(self::UPDATE_POST_CATEGORY),
+                self::DELETE_POST_CATEGORY => self::label(self::DELETE_POST_CATEGORY),
+            ],
+            '文章管理' => [
+                self::VIEW_POST_ARTICLE => self::label(self::VIEW_POST_ARTICLE),
+                self::CREATE_POST_ARTICLE => self::label(self::CREATE_POST_ARTICLE),
+                self::STORE_POST_ARTICLE => self::label(self::STORE_POST_ARTICLE),
+                self::EDIT_POST_ARTICLE => self::label(self::EDIT_POST_ARTICLE),
+                self::UPDATE_POST_ARTICLE => self::label(self::UPDATE_POST_ARTICLE),
+                self::DELETE_POST_ARTICLE => self::label(self::DELETE_POST_ARTICLE),
+            ],
+            '網站設定' => [
+                self::VIEW_SYSTEM_CONFIG => self::label(self::VIEW_SYSTEM_CONFIG),
+                self::UPDATE_SYSTEM_CONFIG => self::label(self::UPDATE_SYSTEM_CONFIG),
+            ],
+            '選單管理' => [
+                self::VIEW_SYSTEM_MENU => self::label(self::VIEW_SYSTEM_MENU),
+                self::CREATE_SYSTEM_MENU => self::label(self::CREATE_SYSTEM_MENU),
+                self::STORE_SYSTEM_MENU => self::label(self::STORE_SYSTEM_MENU),
+                self::EDIT_SYSTEM_MENU => self::label(self::EDIT_SYSTEM_MENU),
+                self::UPDATE_SYSTEM_MENU => self::label(self::UPDATE_SYSTEM_MENU),
+                self::DELETE_SYSTEM_MENU => self::label(self::DELETE_SYSTEM_MENU),
+            ],
+            '系統管理員' => [
+                self::VIEW_ADMIN_ACCOUNT => self::label(self::VIEW_ADMIN_ACCOUNT),
+                self::CREATE_ADMIN_ACCOUNT => self::label(self::CREATE_ADMIN_ACCOUNT),
+                self::STORE_ADMIN_ACCOUNT => self::label(self::STORE_ADMIN_ACCOUNT),
+                self::EDIT_ADMIN_ACCOUNT => self::label(self::EDIT_ADMIN_ACCOUNT),
+                self::UPDATE_ADMIN_ACCOUNT => self::label(self::UPDATE_ADMIN_ACCOUNT),
+                self::DELETE_ADMIN_ACCOUNT => self::label(self::DELETE_ADMIN_ACCOUNT),
+            ],
+            '角色管理' => [
+                self::VIEW_ROLE => self::label(self::VIEW_ROLE),
+                self::CREATE_ROLE => self::label(self::CREATE_ROLE),
+                self::STORE_ROLE => self::label(self::STORE_ROLE),
+                self::EDIT_ROLE => self::label(self::EDIT_ROLE),
+                self::UPDATE_ROLE => self::label(self::UPDATE_ROLE),
+                self::DELETE_ROLE => self::label(self::DELETE_ROLE),
+            ],
+            '權限管理' => [
+                self::VIEW_PERMISSION => self::label(self::VIEW_PERMISSION),
+                self::CREATE_PERMISSION => self::label(self::CREATE_PERMISSION),
+                self::STORE_PERMISSION => self::label(self::STORE_PERMISSION),
+                self::EDIT_PERMISSION => self::label(self::EDIT_PERMISSION),
+                self::UPDATE_PERMISSION => self::label(self::UPDATE_PERMISSION),
+                self::DELETE_PERMISSION => self::label(self::DELETE_PERMISSION),
+            ],
+        ];
+    }
+
 }

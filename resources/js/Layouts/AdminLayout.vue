@@ -1,7 +1,7 @@
  
 <script setup>
-    import { Link, Head } from '@inertiajs/vue3'
-    import { ref, onMounted } from 'vue'
+    import { Link, Head, usePage, router } from '@inertiajs/vue3'
+    import { ref, onMounted, computed, watch, nextTick } from 'vue'
     import Navbar from '@/Components/Navbar.vue'
     import Sidebar from '@/Components/Sidebar.vue'
     import Footer from '@/Components/Footer.vue'
@@ -9,8 +9,15 @@
     import 'simple-datatables/dist/style.css'
     // fontawesome
     import '@fortawesome/fontawesome-free/css/all.min.css'
+    import { useTopGlobalNotify } from '@/Composables/useTopGlobalNotify'
 
     const isSidebarOpen = ref(window.innerWidth >= 1024)
+
+    const { successNotify, errorNotify } = useTopGlobalNotify()
+
+    // 獲取 flash 訊息
+    const page = usePage();
+    const flash = computed(() => page.props.flash);
 
     onMounted(() => {
         window.addEventListener('resize', () => {
@@ -20,9 +27,26 @@
         })
     })
 
-    defineProps({
+    watch(
+        () => page.props.flash,
+        (newFlash) => {
+            if (newFlash?.success || newFlash?.error) {
+                // 使用 nextTick 確保 DOM 更新完成，再加上小延遲確保通知系統準備就緒
+                nextTick(() => {
+                    setTimeout(() => {
+                        if (newFlash?.success) {
+                            successNotify(newFlash.success);
+                        }
+                        if (newFlash?.error) {
+                            errorNotify(newFlash.error);
+                        }
+                    }, 100); // 100ms 延遲
+                });
+            }
+        },
+        { immediate: true, deep: true }
+    );
 
-    })
 </script>
 
 <template>
