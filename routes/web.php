@@ -75,6 +75,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/role/destroy/{id}', [RoleController::class, 'destroy'])->name('admin.role.destroy');
         // 權限
         Route::get('/permission', [PermissionController::class, 'index'])->name('admin.permission');
+        Route::get('/permission/create', [PermissionController::class, 'create'])->name('admin.permission.create');
+        Route::post('/permission', [PermissionController::class, 'store'])->name('admin.permission.store');
+        Route::get('/permission/edit/{id}', [PermissionController::class, 'edit'])->name('admin.permission.edit');
+        Route::put('/permission/update/{id}', [PermissionController::class, 'update'])->name('admin.permission.update');
+        Route::delete('/permission/destroy/{id}', [PermissionController::class, 'destroy'])->name('admin.permission.destroy');
     });
 
 });
