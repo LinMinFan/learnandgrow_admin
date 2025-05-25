@@ -20,7 +20,7 @@ const props = defineProps({
     },
 })
 
-const { successNotify, errorNotify } = useTopGlobalNotify()
+const { errorNotify } = useTopGlobalNotify()
 const form = useForm({
   name: props.role.name || '',
   permissions: props.role.permissions || []
@@ -66,8 +66,6 @@ const submit = () => {
                 // 自訂錯誤訊息（例外處理訊息）
                 errorNotify(message)
             }
-
-            
         })
 }
 

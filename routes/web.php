@@ -66,6 +66,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/account', [AdminController::class, 'index'])->name('admin.account');
         Route::get('/account/create', [AdminController::class, 'create'])->name('admin.account.create');
         Route::post('/account', [AdminController::class, 'store'])->name('admin.account.store');
+        Route::get('/account/edit/{id}', [AdminController::class, 'edit'])->name('admin.account.edit');
+        Route::put('/account/update/{id}', [AdminController::class, 'update'])->name('admin.account.update');
+        Route::delete('/account/destroy/{id}', [AdminController::class, 'destroy'])->name('admin.account.destroy');
+
         // 角色
         Route::get('/role', [RoleController::class, 'index'])->name('admin.role');
         Route::get('/role/create', [RoleController::class, 'create'])->name('admin.role.create');
@@ -73,6 +77,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/role/edit/{id}', [RoleController::class, 'edit'])->name('admin.role.edit');
         Route::put('/role/update/{id}', [RoleController::class, 'update'])->name('admin.role.update');
         Route::delete('/role/destroy/{id}', [RoleController::class, 'destroy'])->name('admin.role.destroy');
+
         // 權限
         Route::get('/permission', [PermissionController::class, 'index'])->name('admin.permission');
         Route::get('/permission/create', [PermissionController::class, 'create'])->name('admin.permission.create');
@@ -80,6 +85,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/permission/edit/{id}', [PermissionController::class, 'edit'])->name('admin.permission.edit');
         Route::put('/permission/update/{id}', [PermissionController::class, 'update'])->name('admin.permission.update');
         Route::delete('/permission/destroy/{id}', [PermissionController::class, 'destroy'])->name('admin.permission.destroy');
+        Route::post('/permission/add-group', [PermissionController::class, 'add_group'])->name('admin.permission.addGroup');
     });
 
 });

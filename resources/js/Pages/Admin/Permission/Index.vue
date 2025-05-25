@@ -5,6 +5,7 @@ import { Link, router, usePage } from '@inertiajs/vue3'
 import cloneDeep from 'lodash/cloneDeep'
 import { DataTable } from 'simple-datatables'
 import 'simple-datatables/dist/style.css'
+import PermissionGroupModal from '@/Components/PermissionGroupModal.vue'
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 import axios from 'axios'
 
@@ -19,13 +20,7 @@ let datatableInstance = null;
 const permissionToDelete = ref(null);
 const showDeleteConfirm = ref(false);
 
-const formatDate = (dateStr) => {
-    const date = new Date(dateStr)
-    const yyyy = date.getFullYear()
-    const mm = String(date.getMonth() + 1).padStart(2, '0')
-    const dd = String(date.getDate()).padStart(2, '0')
-    return `${yyyy}/${mm}/${dd}`
-}
+const showModal = ref(false)
 
 const handleConfirmDelete = () => {
     if (!permissionToDelete.value) return;
@@ -107,10 +102,20 @@ onUnmounted(destroyDataTable)
 <template>
     <AdminLayout>
         <div class="space-y-6">
-        <!-- 標題與新增按鈕 -->
-            <div class="flex justify-between items-center">
+            <!-- 標題區塊 -->
+            <div class="mb-4">
                 <h1 class="text-2xl font-bold">權限管理</h1>
-                <Link :href="route('admin.role.create')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">
+            </div>
+
+            <!-- 操作按鈕區塊（靠右排列） -->
+            <div class="flex justify-end gap-2 mb-6">
+                <button
+                    @click="showModal = true"
+                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow"
+                >
+                    新增群組
+                </button>
+                <Link :href="route('admin.permission.create')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">
                     新增權限
                 </Link>
             </div>
@@ -124,10 +129,13 @@ onUnmounted(destroyDataTable)
                                 編號
                             </th>
                             <th class="px-4 py-3 border border-gray-300 bg-gray-100 text-xs uppercase text-gray-700">
+                                權限代號
+                            </th>
+                            <th class="px-4 py-3 border border-gray-300 bg-gray-100 text-xs uppercase text-gray-700">
                                 權限名稱
                             </th>
                             <th class="px-4 py-3 border border-gray-300 bg-gray-100 text-xs uppercase text-gray-700">
-                                建立日期
+                                群組名稱
                             </th>
                             <th class="px-4 py-3 border border-gray-300 bg-gray-100 text-xs uppercase text-gray-700">
                                 操作
@@ -147,7 +155,12 @@ onUnmounted(destroyDataTable)
                                 {{ permission.name }}
                             </td>
                             <td class="px-4 py-3 font-medium border border-gray-300">
-                                {{ formatDate(permission.created_at) }}
+                                {{ permission.display_name }}
+                            </td>
+                            <td class="px-4 py-3 font-medium border border-gray-300">
+                                <span class="px-2 py-0.5 text-xs font-semibold text-blue-700 bg-blue-100 rounded-full">
+                                    {{ permission.group_display_name }}
+                                </span>
                             </td>
                             <td class="px-4 py-3 font-medium border border-gray-300">
                                 <div class="flex justify-center space-x-2">
@@ -174,6 +187,11 @@ onUnmounted(destroyDataTable)
                     </tbody>
                 </table>
             </div>
+            <!-- 群組表格... -->
+            <PermissionGroupModal 
+                :show="showModal" 
+                @close="showModal = false" 
+            />
             <!-- 確認對話框 -->
             <ConfirmDialog
                 v-if="permissionToDelete"

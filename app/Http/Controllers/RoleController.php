@@ -21,9 +21,9 @@ class RoleController extends Controller
         
         // 如果 URL 有成功參數，設定到 session flash
         if ($request->has('success')) {
-            $this->redirectWithFlash('success', $request->get('success'));
+            return $this->redirectWithFlash('success', $request->get('success'));
         } else if ($request->has('error')) {
-            $this->redirectWithFlash('error', $request->get('error'));
+            return $this->redirectWithFlash('error', $request->get('error'));
         }
 
         return Inertia::render('Admin/Role/Index', compact('roleList'));
