@@ -65,9 +65,9 @@ class PermissionController extends Controller
         $permission = Permission::with('group')->findOrFail($id);
 
         return Inertia::render('Admin/Permission/Edit', compact([
-            'permissionGroups',
-            'permission',
-        ]));
+                'permissionGroups',
+                'permission',
+            ]));
     }
 
     public function update(StorePermissionRequest $request, $id)

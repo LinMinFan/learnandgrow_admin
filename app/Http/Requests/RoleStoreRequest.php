@@ -3,7 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\Rule;
 
 class RoleStoreRequest extends FormRequest
 {
@@ -22,28 +22,37 @@ class RoleStoreRequest extends FormRequest
      */
     public function rules(): array
     {
-        // 如果是編輯模式，則排除當前角色
+        $rules = [
+            'name' => [
+                'required',
+                'string',
+                'max:200',
+                'regex:/^[a-z _-]+$/',
+            ],
+            'display_name' => 'required|string|max:200',
+            'permissions' => 'required|array|min:1',
+        ];
+
         if ($this->isMethod('put')) {
-            return [
-                'name' => 'required|string|max:200|unique:roles,name,' . $this->route('id'),
-                'permissions' => 'required|array|min:1',
-            ];
+            $rules['name'][] = Rule::unique('roles', 'name')->ignore($this->route('id'));
         } else {
-            // 如果是新增模式，則不排除
-            return [
-                'name' => 'required|string|max:200|unique:roles,name',
-                'permissions' => 'required|array|min:1',
-            ];
+            $rules['name'][] = 'unique:roles,name';
         }
+
+        return $rules;
     }
 
     public function messages(): array
     {
         return [
-            'name.required' => '請輸入角色名稱',
-            'name.string' => '角色名稱格式錯誤',
-            'name.max' => '角色名稱過長',
-            'name.unique' => '角色名稱已存在',
+            'name.required' => '請輸入角色代號',
+            'name.string' => '角色代號格式錯誤',
+            'name.regex' => '角色代號格式錯誤',
+            'name.max' => '角色代號過長',
+            'name.unique' => '角色代號已存在',
+            'display_name.required' => '請輸入角色名稱',
+            'display_name.string' => '角色名稱格式錯誤',
+            'display_name.max' => '角色名稱過長',
             'permissions.required' => '請選擇權限',
             'permissions.array' => '權限格式錯誤',
             'permissions.min' => '請至少選擇一項權限',

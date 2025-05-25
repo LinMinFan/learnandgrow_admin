@@ -9,15 +9,7 @@ import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 import axios from 'axios'
 
 const props = defineProps({
-    roleList: Array,
-    message: {
-        type: String,
-        default: '',
-    },
-    type: {
-        type: String,
-        default: '',
-    },
+    roleList: Object,
 })
 
 const roleList = ref(cloneDeep(props.roleList))
@@ -132,6 +124,9 @@ onUnmounted(destroyDataTable)
                                 編號
                             </th>
                             <th class="px-4 py-3 border border-gray-300 bg-gray-100 text-xs uppercase text-gray-700">
+                                角色代號
+                            </th>
+                            <th class="px-4 py-3 border border-gray-300 bg-gray-100 text-xs uppercase text-gray-700">
                                 角色名稱
                             </th>
                             <th class="px-4 py-3 border border-gray-300 bg-gray-100 text-xs uppercase text-gray-700">
@@ -153,6 +148,9 @@ onUnmounted(destroyDataTable)
                             </td>
                             <td class="px-4 py-3 font-medium border border-gray-300">
                                 {{ role.name }}
+                            </td>
+                            <td class="px-4 py-3 font-medium border border-gray-300">
+                                {{ role.display_name }}
                             </td>
                             <td class="px-4 py-3 font-medium border border-gray-300">
                                 {{ formatDate(role.created_at) }}

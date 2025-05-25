@@ -4,6 +4,7 @@ import { Link, usePage, useForm, router  } from '@inertiajs/vue3';
 import Multiselect from 'vue-multiselect'
 import 'vue-multiselect/dist/vue-multiselect.min.css'
 import { useTopGlobalNotify } from '@/Composables/useTopGlobalNotify'
+import { submitFormWithNotify } from '@/Composables/formAxiosWithNotify'
 
 const props = defineProps({
     type: {
@@ -12,28 +13,47 @@ const props = defineProps({
     },
     role: {
         type: Object,
-        default: () => ({ name: '', permissions: [] })
+        default: () => ({
+            id: '',
+            name: '',
+            display_name: '',
+            permissions: []
+        })
     },
-    permissions: {
-        type: Array,
+    permissionGroups: {
+        type: Object,
         required: true
     },
 })
 
 const { errorNotify } = useTopGlobalNotify()
 const form = useForm({
-  name: props.role.name || '',
-  permissions: props.role.permissions || []
+    name: props.role.name || '',
+    display_name: props.role.display_name || '',
+    permissions: props.role.permissions || []
 })
 
 const submit = () => {
+    form.clearErrors();
+    
     if (!form.name.trim()) {
-        form.errors.name = '角色名稱為必填';
+        form.errors.name = '角色代號為必填';
+        return;
+    }
+    
+    if (!form.display_name.trim()) {
+        form.errors.display_name = '角色名稱為必填';
+        return;
+    }
+
+    if (form.permissions.length < 1) {
+        form.errors.permissions = '至少選擇一個權限';
         return;
     }
 
     const payload = {
         name: form.name,
+        display_name: form.display_name,
         permissions: form.permissions,
     };
 
@@ -42,97 +62,78 @@ const submit = () => {
         : route('admin.role.update', props.role.id);
 
     const method = props.type === 'create' ? 'post' : 'put';
+
+    const redirectUrl = route('admin.role');
     
-    axios[method](url, payload)
-        .then((res) => {
-            router.visit(route('admin.role'), {
-                data: {
-                    success: res.data.message
-                }
-            })
-        })
-        .catch((errors) => {
-            form.clearErrors();
-
-            const formErrors = get(errors, 'response.data.errors', {});
-            const message = get(errors, 'response.data.message', '發生錯誤，請稍後再試');
-
-            // 驗證錯誤
-            if (formErrors.name) {
-                form.errors.name = formErrors.name[0]
-            } else if (formErrors.permissions) {
-                form.errors.permissions = formErrors.permissions[0]
-            } else {
-                // 自訂錯誤訊息（例外處理訊息）
-                errorNotify(message)
-            }
-        })
+    submitFormWithNotify({
+        form,
+        method,
+        url,
+        data: payload,
+        redirectUrl,
+    })
 }
 
 </script>
 
 <template>
     <form @submit.prevent="submit" class="space-y-6">
+        <!-- 角色 -->
         <div>
-            <label class="block font-medium">
-                角色名稱 <span class="text-red-600">*</span>
+            <label class="block font-bold mb-1">
+                角色代號 <span class="text-red-600">*</span>
             </label>
-            <input
-                v-model="form.name"
-                type="text"
-                class="form-input w-full"
-                :class="{ 'border-red-500': form.errors.name }"
-                placeholder="請輸入角色名稱"
-            />
+            <input v-model="form.name" type="text" class="form-input w-full" />
             <div v-if="form.errors.name" class="text-red-500 text-sm mt-1">
                 {{ form.errors.name }}
             </div>
         </div>
-
         <div>
-            <label class="block font-medium">權限</label>
-            <Multiselect
-                v-model="form.permissions"
-                :options="permissions"
-                :multiple="true"
-                :group-values="'permissions'"
-                :group-label="'group'"
-                :close-on-select="false"
-                :clear-on-select="false"
-                label="label"
-                track-by="id"
-                placeholder="請選擇權限"
-                class="w-full"
-            >
-                <template #tag="{ option, remove }">
-                    <span class="bg-green-600 text-white px-2 py-1 rounded mr-1">
-                        {{ option.label }}
-                        <span class="cursor-pointer ml-1" @click="remove(option)">x</span>
-                    </span>
-                </template>
-                
-                <!-- 沒有選項 -->
-                <template #noOptions>
-                    <span class="text-gray-500">無可選擇項目</span>
-                </template>
+            <label class="block font-bold mb-1">
+                角色名稱 <span class="text-red-600">*</span>
+            </label>
+            <input v-model="form.display_name" type="text" class="form-input w-full" />
+            <div v-if="form.errors.display_name" class="text-red-500 text-sm mt-1">
+                {{ form.errors.display_name }}
+            </div>
+        </div>
 
-                <!-- 沒有符合搜尋 -->
-                <template #noResult>
-                    <span class="text-gray-500">查無符合的項目</span>
-                </template>
-            </Multiselect>
+        <!-- 權限選擇區塊 -->
+        <div>
+            <label class="block font-medium mb-2">
+                權限 <span class="text-red-600">*</span>
+            </label>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div v-for="(group, index) in permissionGroups" :key="index" class="border border-gray-400 rounded p-4">
+                    <h3 class="font-semibold mb-2">{{ group.display_name }}</h3>
+                    <div class="space-y-2">
+                        <label
+                            v-for="permission in group.permissions"
+                            :key="permission.id"
+                            class="flex items-center space-x-2"
+                        >
+                            <input
+                                type="checkbox"
+                                :value="permission.id"
+                                v-model="form.permissions"
+                                class="form-checkbox"
+                            />
+                            <span>{{ permission.display_name }}</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
             <div v-if="form.errors.permissions" class="text-red-500 text-sm mt-1">
                 {{ form.errors.permissions }}
             </div>
         </div>
-
         <div class="flex justify-end space-x-2">
             <Link :href="route('admin.role')" class="btn">取消</Link>
             <button type="submit" class="btn btn-primary" :disabled="form.processing">儲存</button>
         </div>
     </form>
 </template>
-
+  
 <style lang="postcss">
 .form-input {
     @apply border border-gray-300 rounded px-3 py-2;
@@ -142,5 +143,8 @@ const submit = () => {
 }
 .btn-primary {
     @apply bg-blue-600 text-white hover:bg-blue-700;
+}
+.form-checkbox {
+    @apply w-4 h-4 text-blue-600 border-gray-300 rounded;
 }
 </style>
