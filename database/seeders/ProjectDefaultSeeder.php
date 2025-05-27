@@ -45,10 +45,25 @@ class ProjectDefaultSeeder extends Seeder
             'updated_at' => $now,
         ]);
 
+        // 預設訪客
+        $guest = User::create([
+            'name' => 'guest',
+            'email' => 'guest@mail.com',
+            'password' => Hash::make(env('GUEST_PASSWORD', 'guest')),
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
+
         // 建立最高權限角色
         $role = Role::create([
             'name' => 'super admin',
             'display_name' => '超級管理員',
+        ]);
+
+        // 建立訪客權限角色
+        $guestRole = Role::create([
+            'name' => 'guest',
+            'display_name' => '訪客',
         ]);
 
         // 建立預設權限群組
@@ -295,9 +310,16 @@ class ProjectDefaultSeeder extends Seeder
 
         // 將所有權限給 super admin 角色
         $role->givePermissionTo(Permission::all());
+        $guestRole->syncPermissions([
+            'view dashboard',
+            'view index',
+            'view category',
+            'view post',
+        ]);
 
         // 將 super-admin 角色賦予使用者
         $user->assignRole('super admin');
+        $guest->assignRole('guest');
 
         // 預設選單
         $parentMenus = [

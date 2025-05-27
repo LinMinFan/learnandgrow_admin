@@ -43,7 +43,7 @@ const handleConfirmDelete = () => {
         .catch((error) => {
             router.visit(route('admin.role'), {
                 data: {
-                    error: response.data.message
+                    error: error.response?.data?.message
                 }
             })
         })

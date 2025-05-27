@@ -9,8 +9,9 @@ use App\Models\Role;
 use App\Models\Permission;
 use App\Models\PermissionGroup;
 use Illuminate\Support\Facades\Log;
-use App\Http\Requests\RoleStoreRequest;
+use App\Http\Requests\StoreRoleRequest;
 use App\Http\Traits\RedirectWithFlashTrait;
+use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
@@ -39,10 +40,11 @@ class RoleController extends Controller
         return Inertia::render('Admin/Role/Create', compact('permissionGroups'));
     }
 
-    public function store(RoleStoreRequest $request)
+    public function store(StoreRoleRequest $request)
     {
         $data = $request->validated();
 
+        DB::beginTransaction();
         try {
             // 驗證 ID 是否存在
             $validIds = Permission::whereIn('id', $data['permissions'])->pluck('id')->toArray();
@@ -57,10 +59,13 @@ class RoleController extends Controller
 
             $role->syncPermissions($validIds);
 
-            return response()->json(['message' => '角色新增成功'], 200);
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 400);
         }
+
+        return response()->json(['message' => '角色新增成功'], 200);
     }
 
     
@@ -86,41 +91,42 @@ class RoleController extends Controller
             ]));
     }
 
-    public function update(RoleStoreRequest $request, $id)
+    public function update(StoreRoleRequest $request, $id)
     {
         $role = Role::findOrFail($id);
 
         $data = $request->validated();
 
+        DB::beginTransaction();
         try {
-            // 驗證 ID 是否存在
-            $validIds = Permission::whereIn('id', $data['permissions'])->pluck('id')->toArray();
-            if (count($validIds) !== count($data['permissions'])) {
-                throw new \Exception('所選的權限無效');
-            }
+            $role->update([
+                'name' => $data['name'],
+                'display_name' => $data['display_name'],
+            ]);
+    
+            $role->syncPermissions($data['permissions']);
+
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 400);
         }
-        
-
-        $role->update([
-            'name' => $data['name'],
-            'display_name' => $data['display_name'],
-        ]);
-
-        $role->syncPermissions($validIds);
 
         return response()->json(['message' => '角色更新成功'], 200);
     }
 
     public function destroy($id)
     {
+        DB::beginTransaction();
         try {
             Role::findOrFail($id)->delete();
 
-            return response()->json(['message' => '角色刪除成功'], 200);
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 400);
         }
+
+        return response()->json(['message' => '角色刪除成功'], 200);
     }
 }

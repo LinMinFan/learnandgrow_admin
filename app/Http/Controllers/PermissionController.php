@@ -10,6 +10,7 @@ use App\Http\Requests\StorePermissionGroupRequest;
 use App\Http\Requests\StorePermissionRequest;
 use Illuminate\Support\Facades\Log;
 use App\Http\Traits\RedirectWithFlashTrait;
+use Illuminate\Support\Facades\DB;
 
 class PermissionController extends Controller
 {
@@ -49,13 +50,17 @@ class PermissionController extends Controller
 
     public function store(StorePermissionRequest $request)
     {
+        DB::beginTransaction();
         try {
             Permission::create($request->validated());
 
-            return response()->json(['message' => '權限新增成功'], 200);
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 400);
         }
+
+        return response()->json(['message' => '權限新增成功'], 200);
     }
 
     public function edit($id)
@@ -74,24 +79,32 @@ class PermissionController extends Controller
     {
         $permission = Permission::findOrFail($id);
 
+        DB::beginTransaction();
         try {
             $permission->update($request->validated());
 
-            return response()->json(['message' => '權限更新成功'], 200);
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 400);
         }
+
+        return response()->json(['message' => '權限更新成功'], 200);
     }
 
     public function destroy($id)
     {
+        DB::beginTransaction();
         try {
             Permission::findOrFail($id)->delete();
 
-            return response()->json(['message' => '權限刪除成功'], 200);
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 400);
         }
+
+        return response()->json(['message' => '權限刪除成功'], 200);
     }
 
     public function add_group(StorePermissionGroupRequest $request)
@@ -103,13 +116,17 @@ class PermissionController extends Controller
             'is_active' => true,
         ]);
 
+        DB::beginTransaction();
         try {
 
             PermissionGroup::create($data);
 
-            return response()->json(['message' => '權限群組新增成功'], 200);
+            DB::commit();
         } catch (\Exception $e) {
+            DB::rollBack();
             return response()->json(['message' => $e->getMessage()], 400);
         }
+
+        return response()->json(['message' => '權限群組新增成功'], 200);
     }
 }

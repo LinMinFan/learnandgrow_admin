@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class RoleStoreRequest extends FormRequest
+class StoreRoleRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -31,6 +31,7 @@ class RoleStoreRequest extends FormRequest
             ],
             'display_name' => 'required|string|max:200',
             'permissions' => 'required|array|min:1',
+            'permissions.*' => ['exists:permissions,id'],
         ];
 
         if ($this->isMethod('put')) {

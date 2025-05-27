@@ -38,7 +38,7 @@ const handleConfirmDelete = () => {
         .catch((error) => {
             router.visit(route('admin.permission'), {
                 data: {
-                    error: response.data.message
+                    error: error.response?.data?.message
                 }
             })
         })
@@ -197,7 +197,7 @@ onUnmounted(destroyDataTable)
                 v-if="permissionToDelete"
                 :show="showDeleteConfirm"
                 title="刪除權限"
-                :confirmMessage="`確定要刪除角色「${permissionToDelete?.name}」嗎？`"
+                :confirmMessage="`確定要刪除權限「${permissionToDelete?.name}」嗎？`"
                 confirmButtonText="刪除"
                 @confirm="handleConfirmDelete"
                 @cancel="handleCancelDelete"
