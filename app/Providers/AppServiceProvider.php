@@ -26,7 +26,7 @@ class AppServiceProvider extends ServiceProvider
     {
         Inertia::share([
             'user' => function () {
-                $user = Auth::user();
+                $user = auth()->user();
                 
                 return $user ? [
                     'id' => $user->id,
@@ -36,16 +36,19 @@ class AppServiceProvider extends ServiceProvider
                 ] : null;
             },
             'menus' => function () {
-                $user = Auth::user();
+                $user = auth()->user();
 
                 if (!$user) {
                     return [];
                 }
 
+                $isSuperAdmin = $user->roles()->where('name', 'super admin')->exists();
+
                 $menus = Menu::orderBy('sort')->get();
-                // 過濾沒有權限的項目（只過濾有設權限的項目）
-                $filtered = $menus->filter(function ($menu) use ($user) {
-                    return !$menu->permission_name || $user->can($menu->permission_name);
+
+                // 先過濾
+                $filtered = $menus->filter(function ($menu) use ($isSuperAdmin) {
+                    return $isSuperAdmin || $menu->is_active || $menu->route === '/dashboard';
                 });
 
                 // 重建巢狀結構
@@ -54,13 +57,20 @@ class AppServiceProvider extends ServiceProvider
                     ->sortBy('sort') // 主選單排序
                     ->map(function ($parent) use ($filtered) {
                         // 子選單排序
-                        $parent->children = $filtered
-                        ->where('parent_id', $parent->id)
-                        ->sortBy('sort')
-                        ->values();
+                        $children = $filtered
+                            ->where('parent_id', $parent->id)
+                            ->sortBy('sort')
+                            ->values();
 
+                        $parent->children = $children;
                         return $parent;
-                    })->values();
+                    })
+                    ->filter(function ($parent) {
+                        // 儀錶板一定顯示；其餘若無子選單則不顯示
+                        return $parent->route === '/dashboard' || $parent->children->isNotEmpty();
+                    })
+                    ->sortBy('sort')
+                    ->values();
 
                 return $menuTree;
             },

@@ -19,13 +19,13 @@ class RoleController extends Controller
 
     public function index(Request $request)
     {
-        // 取得所有角色
-        $roleList = Role::with('permissions')->get();
-        
         // 如果 URL 有成功參數，設定到 session flash
         if ($response = $this->redirectIfHasFlashParams($request, 'admin.role')) {
             return $response;
         };
+        
+        // 取得所有角色
+        $roleList = Role::with('permissions')->get();
 
         return Inertia::render('Admin/Role/Index', compact('roleList'));
     }

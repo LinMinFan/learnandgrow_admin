@@ -1,22 +1,24 @@
 <script setup>
-import { ref, reactive, watchEffect, onMounted, computed } from 'vue'
-import AdminLayout from '@/Layouts/AdminLayout.vue';
-import { Link, usePage  } from '@inertiajs/vue3';
-import { onClickOutside  } from '@vueuse/core'
+import { ref, onMounted, onUnmounted } from 'vue'
+import AdminLayout from '@/Layouts/AdminLayout.vue'
+import { Link, router, usePage } from '@inertiajs/vue3'
+import { useTopGlobalNotify } from '@/Composables/useTopGlobalNotify'
+import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 import cloneDeep from 'lodash/cloneDeep'
 import draggable from 'vuedraggable'
 import axios from 'axios'
-import { useNotification } from "@kyvg/vue3-notification";
 
 const props = defineProps({
     menuData: Array,
 })
 
 const menus = ref(cloneDeep(props.menuData)) // 深拷貝，避免直接修改 props
+const menuToDelete = ref(null);
+const showDeleteConfirm = ref(false);
 
 const originalSorted = ref([])
 
-const { notify }  = useNotification()
+const { errorNotify, successNotify } = useTopGlobalNotify()
 
 onMounted(() => {
     originalSorted.value = getSortedMenus()
@@ -64,35 +66,62 @@ const updateSortedMenus = () => {
     axios
         .post(route('system.menu.sort'), { sorted: current })
         .then(() => {
-            notify({
-                group: 'top',
-                text: '資料儲存完成！',
-                type: 'success',
-            })
+            successNotify('資料儲存完成！')
             originalSorted.value = current // 更新原始參考值
         })
         .catch(() => {
-            notify({
-                group: 'top',
-                text: '資料儲存失敗！',
-                type: 'error',
-            })
+            errorNotify('資料儲存失敗！')
         })
 }
+
+const handleConfirmDelete = () => {
+    if (!menuToDelete.value) return;
+    showDeleteConfirm.value = false;
+    axios
+        .delete(route('system.menu.destroy', { id: menuToDelete.value.id }))
+        .then((res) => {
+            menuToDelete.value = null
+            router.visit(route('system.menu'), {
+                data: {
+                    success: res.data.message
+                }
+            })
+        })
+        .catch((error) => {
+            router.visit(route('system.menu'), {
+                data: {
+                    error: error.response?.data?.message
+                }
+            })
+        })
+};
+
+const handleCancelDelete = () => {
+    showDeleteConfirm.value = false;
+    menuToDelete.value = null;
+};
+
+const handleDeleteClick = (menu) => {
+  menuToDelete.value = menu;
+  showDeleteConfirm.value = true;
+};
 
 </script>
 
 <template>
     <AdminLayout>
         <div>
-            <div class="flex justify-between mb-4">
+            <div class="flex justify-between items-center">
                 <h1 class="text-2xl font-bold">後台選單管理</h1>
-                <Link href="/system/menus/create" class="btn btn-primary bg-blue-600 text-white px-4 py-2 rounded">
+                <Link :href="route('system.menu.create')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded shadow">
                     新增選單
                 </Link>
             </div>
 
             <div class="bg-white rounded shadow p-4">
+                <div v-if="menus.length === 0" class="text-gray-500 text-center py-10">
+                    尚無選單資料，請點擊右上角「新增選單」。
+                </div>
                 <draggable
                     v-model="menus"
                     item-key="id"
@@ -107,6 +136,21 @@ const updateSortedMenus = () => {
                                     <strong>{{ menu.title }}</strong>
                                     <span class="ml-2 text-sm text-gray-600">({{ menu.route || menu.children.length }})</span>
                                 </div>
+                                <div class="space-x-2 mr-3">
+                                    <Link
+                                        :href="route('system.menu.edit', menu.id)"
+                                        class="p-2 rounded hover:bg-blue-100 text-blue-600"
+                                        title="編輯"
+                                    >
+                                        <i class="fas fa-pen-to-square"></i>
+                                    </Link>
+                                    <button 
+                                        class="text-red-600 hover:text-red-800"
+                                        @click.stop="handleDeleteClick(menu)"
+                                    >
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
                             </div>
 
                             <!-- 子選單 -->
@@ -118,8 +162,29 @@ const updateSortedMenus = () => {
                                 @end="() => onChildDragEnd(menu)"
                             >
                                 <template #item="{ element: child }">
-                                    <div class="ml-4 p-2 bg-blue-100 border-t handle">
-                                        ↳ {{ child.title }} ({{ child.route || '—' }})
+                                    <div class="ml-4 p-2 bg-blue-100 border-t handle flex justify-between items-center">
+                                        <div>
+                                            ↳ {{ child.title }} ({{ child.route || '—' }})
+                                            <span v-if="child.permission?.display_name" class="ml-2 text-sm text-gray-600">
+                                                / {{ child.permission.display_name }}
+                                            </span>
+                                        </div>
+                                        <div class="space-x-2 flex-shrink-0 mr-3">
+                                            <Link
+                                                :href="route('system.menu.edit', child.id)"
+                                                class="p-2 rounded hover:bg-blue-100 text-blue-600"
+                                                title="編輯"
+                                            >
+                                                <i class="fas fa-pen-to-square"></i>
+                                            </Link>
+                                            <button 
+                                                title="刪除"
+                                                class="text-red-600 hover:text-red-800"
+                                                @click.stop="handleDeleteClick(child)"
+                                            >
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </div>
                                     </div>
                                 </template>
                             </draggable>
@@ -127,6 +192,16 @@ const updateSortedMenus = () => {
                     </template>
                 </draggable>
             </div>
+            <!-- 確認對話框 -->
+            <ConfirmDialog
+                v-if="menuToDelete"
+                :show="showDeleteConfirm"
+                title="刪除選單"
+                :confirmMessage="`確定要刪除選單「${menuToDelete?.title}」嗎？`"
+                confirmButtonText="刪除"
+                @confirm="handleConfirmDelete"
+                @cancel="handleCancelDelete"
+            />
         </div>
     </AdminLayout>
 </template>

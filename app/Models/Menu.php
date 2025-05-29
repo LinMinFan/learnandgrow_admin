@@ -37,4 +37,9 @@ class Menu extends Model
     {
         return $query->whereNull('parent_id')->orderBy('sort');
     }
+
+    public function permission()
+    {
+        return $this->belongsTo(Permission::class, 'permission_id');
+    }
 }

@@ -18,4 +18,9 @@ class Permission extends SpatiePermission
     {
         return $this->belongsTo(PermissionGroup::class, 'permission_group_id');
     }
+
+    public function menus()
+    {
+        return $this->hasMany(Menu::class, 'permission_id');
+    }
 }

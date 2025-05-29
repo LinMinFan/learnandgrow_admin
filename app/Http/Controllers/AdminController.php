@@ -18,12 +18,12 @@ class AdminController extends Controller
 
     public function index(Request $request)
     {
-        $userList = User::with('roles')->get();
-
         // 如果 URL 有成功參數，設定到 session flash
         if ($response = $this->redirectIfHasFlashParams($request, 'admin.account')) {
             return $response;
         };
+        
+        $userList = User::with('roles')->get();
 
         return Inertia::render('Admin/Account/Index', compact('userList'));
     }

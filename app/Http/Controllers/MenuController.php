@@ -6,19 +6,32 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Menu;
 use Illuminate\Support\Facades\Log;
+use App\Http\Traits\RedirectWithFlashTrait;
+use Illuminate\Support\Facades\DB;
 
 class MenuController extends Controller
 {
-    public function index()
+    use RedirectWithFlashTrait;
+
+    public function index(Request $request)
     {
-        $menuData = Menu::with('children')
-                ->whereNull('parent_id')
-                ->orderBy('sort')
-                ->get()
-                ->map(function ($menu) {
-                    $menu->children = $menu->children->sortBy('sort')->values();
-                    return $menu;
-            });
+        // 如果 URL 有成功參數，設定到 session flash
+        if ($response = $this->redirectIfHasFlashParams($request, 'system.menu')) {
+            return $response;
+        };
+
+        $menuData = Menu::with('children.permission')
+            ->whereNull('parent_id')
+            ->orderBy('sort')
+            ->get()
+            ->filter(function ($menu) {
+                return $menu->route === '/dashboard' || $menu->children->isNotEmpty(); // 過濾掉沒有子選單的父選單
+            })
+            ->map(function ($menu) {
+                $menu->children = $menu->children->sortBy('sort')->values();
+                return $menu;
+            })
+            ->values();
 
         return Inertia::render('System/Menu/Index', compact('menuData'));
     }

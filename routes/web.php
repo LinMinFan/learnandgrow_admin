@@ -57,7 +57,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/menu', [MenuController::class, 'index'])->name('system.menu');
         Route::get('/menu/create', [MenuController::class, 'create'])->name('system.menu.create');
         Route::post('/menu', [MenuController::class, 'store'])->name('system.menu.store');
-        Route::post('/menu/sort', [MenuController::class, 'sort'])->name('system.menu.sort');
+        Route::get('/menu/edit/{id}', [MenuController::class, 'edit'])->name('system.menu.edit');
+        Route::put('/menu/update/{id}', [MenuController::class, 'update'])->name('system.menu.update');
+        Route::delete('/menu/destroy/{id}', [MenuController::class, 'destroy'])->name('system.menu.destroy');
     });
 
     // 角色和權限

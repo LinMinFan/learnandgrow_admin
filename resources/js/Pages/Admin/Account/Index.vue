@@ -5,7 +5,6 @@ import { Link, router, usePage } from '@inertiajs/vue3'
 import cloneDeep from 'lodash/cloneDeep'
 import { DataTable } from 'simple-datatables'
 import 'simple-datatables/dist/style.css'
-import PermissionGroupModal from '@/Components/PermissionGroupModal.vue'
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 import axios from 'axios'
 
@@ -19,8 +18,6 @@ let datatableInstance = null;
 
 const userToDelete = ref(null);
 const showDeleteConfirm = ref(false);
-
-const showModal = ref(false)
 
 const handleConfirmDelete = () => {
     if (!userToDelete.value) return;
@@ -185,11 +182,6 @@ onUnmounted(destroyDataTable)
                     </tbody>
                 </table>
             </div>
-            <!-- 群組表格... -->
-            <PermissionGroupModal 
-                :show="showModal" 
-                @close="showModal = false" 
-            />
             <!-- 確認對話框 -->
             <ConfirmDialog
                 v-if="userToDelete"

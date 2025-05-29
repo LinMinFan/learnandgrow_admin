@@ -18,6 +18,11 @@ class PermissionController extends Controller
 
     public function index(Request $request)
     {
+        // 如果 URL 有成功參數，設定到 session flash
+        if ($response = $this->redirectIfHasFlashParams($request, 'admin.permission')) {
+            return $response;
+        };
+        
         $permissionGroups = PermissionGroup::with('permissions')
             ->orderBy('sort','asc')
             ->get();
@@ -32,11 +37,6 @@ class PermissionController extends Controller
                 ];
             });
         })->values(); // 重新 index keys，避免前端索引混亂
-        
-        // 如果 URL 有成功參數，設定到 session flash
-        if ($response = $this->redirectIfHasFlashParams($request, 'admin.permission')) {
-            return $response;
-        };
 
         return Inertia::render('Admin/Permission/Index', compact('permissions'));
     }
