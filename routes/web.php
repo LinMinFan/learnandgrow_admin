@@ -42,7 +42,7 @@ Route::get('/', function (): RedirectResponse {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard'); */
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
     // 儀表板
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
