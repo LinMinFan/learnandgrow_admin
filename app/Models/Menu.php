@@ -11,7 +11,9 @@ class Menu extends Model
         'icon', 
         'route', 
         'parent_id', 
-        'sort'
+        'sort',
+        'is_active',
+        'permission_id',
     ];
 
     /**

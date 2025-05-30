@@ -134,7 +134,10 @@ const handleDeleteClick = (menu) => {
                             <div class="p-2 handle flex justify-between">
                                 <div>
                                     <strong>{{ menu.title }}</strong>
-                                    <span class="ml-2 text-sm text-gray-600">({{ menu.route || menu.children.length }})</span>
+                                    <span class="ml-2 text-sm text-gray-600">({{ menu.children.length || menu.route }})</span>
+                                    <span class="ml-2 text-sm text-gray-600">
+                                        ({{ menu.is_active ? '顯示' : '不顯示' }})
+                                    </span>
                                 </div>
                                 <div class="space-x-2 mr-3">
                                     <Link
@@ -167,6 +170,9 @@ const handleDeleteClick = (menu) => {
                                             ↳ {{ child.title }} ({{ child.route || '—' }})
                                             <span v-if="child.permission?.display_name" class="ml-2 text-sm text-gray-600">
                                                 / {{ child.permission.display_name }}
+                                            </span>
+                                            <span class="ml-2 text-sm text-gray-600">
+                                                ({{ child.is_active ? '顯示' : '不顯示' }})
                                             </span>
                                         </div>
                                         <div class="space-x-2 flex-shrink-0 mr-3">

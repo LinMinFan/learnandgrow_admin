@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Menu;
+use App\Models\PermissionGroup;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\StoreMenuRequest;
 use App\Http\Traits\RedirectWithFlashTrait;
 use Illuminate\Support\Facades\DB;
 
@@ -38,29 +40,122 @@ class MenuController extends Controller
 
     public function create()
     {
-        $parents = Menu::whereNull('parent_id')->get();
+        $parents = Menu::whereNull('parent_id')->orderBy('sort')->get();
+        $permissions = PermissionGroup::with('permissions')
+            ->orderBy('sort')
+            ->get()
+            ->pluck('permissions')
+            ->flatten()
+            ->map(function ($permission) {
+                return [
+                    'id' => $permission->id,
+                    'display_name' => $permission->display_name,
+                ];
+            })
+            ->values();
 
         return Inertia::render('System/Menu/Create', [
-            'parents' => $parents
+            'parents' => $parents,
+            'permissions' => $permissions,
         ]);
     }
 
-    public function store(Request $request)
+    public function store(StoreMenuRequest $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'icon' => 'nullable|string',
-            'route' => 'nullable|string',
-            'parent_id' => 'nullable|integer|exists:menus,id',
-            'sort' => 'nullable|integer',
-        ]);
+        $data = $request->validated();
+        
+        // 根據是否有 parent_id 來區分主選單或子選單
+        if (empty($data['parent_id'])) {
+            // 主選單：找出 parent_id 為 null 的最大 sort
+            $maxSort = Menu::whereNull('parent_id')->max('sort') ?? 0;
+        } else {
+            // 子選單：找出 parent_id 為該父 ID 的最大 sort
+            $maxSort = Menu::where('parent_id', $data['parent_id'])->max('sort') ?? 0;
+        }
 
-        Menu::create($request->all());
+        $data['sort'] = $maxSort + 1;
+        
+        $data['is_active'] = filter_var($data['is_active'], FILTER_VALIDATE_BOOLEAN);
 
-        return redirect()->route('system.menu')->with('success', '選單建立成功');
+        DB::beginTransaction();
+        try {
+            Menu::create($data);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+
+        return response()->json(['message' => '選單新增成功'], 200);
     }
 
-    // MenuController.php
+    public function edit($id)
+    {
+        $menu = Menu::findOrFail($id);
+
+        $parents = Menu::whereNull('parent_id')->orderBy('sort')->get();
+        $permissions = PermissionGroup::with('permissions')
+            ->orderBy('sort')
+            ->get()
+            ->pluck('permissions')
+            ->flatten()
+            ->map(function ($permission) {
+                return [
+                    'id' => $permission->id,
+                    'display_name' => $permission->display_name,
+                ];
+            })
+            ->values();
+
+        $parent = $parents->firstWhere('id', $menu->parent_id);
+        $permission = $permissions->firstWhere('id', $menu->permission_id);
+        $menu->parent_id = $parent ? $parent : null;
+        $menu->permission_id = $permission ? $permission : null;
+
+        return Inertia::render('System/Menu/Edit', [
+            'parents' => $parents,
+            'permissions' => $permissions,
+            'menu' => $menu,
+        ]);
+    }
+
+    public function update(StoreMenuRequest $request, $id)
+    {
+        $menu = Menu::findOrFail($id);
+        $data = $request->validated();
+        
+        $data['is_active'] = filter_var($data['is_active'], FILTER_VALIDATE_BOOLEAN);
+
+        DB::beginTransaction();
+        try {
+    
+            $menu->update($data);
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+
+        return response()->json(['message' => '選單編輯成功'], 200);
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            Menu::findOrFail($id)->delete();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+
+        return response()->json(['message' => '選單刪除成功'], 200);
+    }
+
     public function sort(Request $request)
     {
         $sorted = $request->input('sorted');

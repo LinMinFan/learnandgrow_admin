@@ -1,8 +1,6 @@
 <script setup>
 import get from 'lodash/get';
 import { Link, usePage, useForm, router  } from '@inertiajs/vue3';
-import Multiselect from 'vue-multiselect'
-import 'vue-multiselect/dist/vue-multiselect.min.css'
 import { useTopGlobalNotify } from '@/Composables/useTopGlobalNotify'
 import { submitFormWithNotify } from '@/Composables/formAxiosWithNotify'
 
