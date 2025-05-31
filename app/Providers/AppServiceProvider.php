@@ -48,7 +48,7 @@ class AppServiceProvider extends ServiceProvider
 
                 // 先過濾
                 $filtered = $menus->filter(function ($menu) use ($isSuperAdmin) {
-                    return $isSuperAdmin || $menu->is_active || $menu->route === '/dashboard';
+                    return $isSuperAdmin || $menu->is_active || $menu->route === '/dashboard' || $menu->route === '/media';
                 });
 
                 // 重建巢狀結構
@@ -66,8 +66,8 @@ class AppServiceProvider extends ServiceProvider
                         return $parent;
                     })
                     ->filter(function ($parent) {
-                        // 儀錶板一定顯示；其餘若無子選單則不顯示
-                        return $parent->route === '/dashboard' || $parent->children->isNotEmpty();
+                        // 儀錶板/媒體庫 一定顯示；其餘若無子選單則不顯示
+                        return $parent->route === '/dashboard' || $parent->route === '/media' || $parent->children->isNotEmpty();
                     })
                     ->sortBy('sort')
                     ->values();

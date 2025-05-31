@@ -76,59 +76,66 @@ class ProjectDefaultSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'name' => 'media',
+                'display_name' => '媒體庫',
+                'description' => '媒體庫相關',
+                'sort' => 2,
+                'is_active' => true,
+            ],
+            [
                 'name' => 'index',
                 'display_name' => '首頁管理',
                 'description' => '首頁相關',
-                'sort' => 2,
+                'sort' => 3,
                 'is_active' => true,
             ],
             [
                 'name' => 'category',
                 'display_name' => '文章類別管理',
                 'description' => '文章類別相關',
-                'sort' => 3,
+                'sort' => 4,
                 'is_active' => true,
             ],
             [
                 'name' => 'post',
                 'display_name' => '文章管理',
                 'description' => '文章相關',
-                'sort' => 4,
+                'sort' => 5,
                 'is_active' => true,
             ],
             [
                 'name' => 'menu',
                 'display_name' => '選單管理',
                 'description' => '選單相關',
-                'sort' => 5,
+                'sort' => 6,
                 'is_active' => true,
             ],
             [
                 'name' => 'system',
                 'display_name' => '系統參數管理',
                 'description' => '系統參數相關',
-                'sort' => 6,
+                'sort' => 7,
                 'is_active' => true,
             ],
             [
                 'name' => 'account',
                 'display_name' => '系統管理員帳號管理',
                 'description' => '系統管理員帳號相關',
-                'sort' => 7,
+                'sort' => 8,
                 'is_active' => true,
             ],
             [
                 'name' => 'role',
                 'display_name' => '角色管理',
                 'description' => '角色相關',
-                'sort' => 8,
+                'sort' => 9,
                 'is_active' => true,
             ],
             [
                 'name' => 'permission',
                 'display_name' => '權限管理',
                 'description' => '權限相關',
-                'sort' => 9,
+                'sort' => 10,
                 'is_active' => true,
             ],
         ];
@@ -142,6 +149,7 @@ class ProjectDefaultSeeder extends Seeder
 
         $permissionGroupIds  = PermissionGroup::pluck('id', 'name');
         $dashboardId = $permissionGroupIds['dashboard'];
+        $mediaId = $permissionGroupIds['media'];
         $indexdId = $permissionGroupIds['index'];
         $categoryId = $permissionGroupIds['category'];
         $postId = $permissionGroupIds['post'];
@@ -156,7 +164,22 @@ class ProjectDefaultSeeder extends Seeder
             [
                 'permission_group_id' => $dashboardId,
                 'name' => 'view dashboard',
-                'display_name' => '檢視儀錶板',
+                'display_name' => '儀錶板檢視',
+            ],
+            [
+                'permission_group_id' => $mediaId,
+                'name' => 'view media',
+                'display_name' => '媒體庫檢視',
+            ],
+            [
+                'permission_group_id' => $mediaId,
+                'name' => 'update media',
+                'display_name' => '媒體庫更新',
+            ],
+            [
+                'permission_group_id' => $mediaId,
+                'name' => 'delete media',
+                'display_name' => '媒體庫刪除',
             ],
             [
                 'permission_group_id' => $indexdId,
@@ -181,7 +204,7 @@ class ProjectDefaultSeeder extends Seeder
             [
                 'permission_group_id' => $categoryId,
                 'name' => 'update category',
-                'display_name' => '文章類別編輯',
+                'display_name' => '文章類別更新',
             ],
             [
                 'permission_group_id' => $categoryId,
@@ -201,7 +224,7 @@ class ProjectDefaultSeeder extends Seeder
             [
                 'permission_group_id' => $postId,
                 'name' => 'update post',
-                'display_name' => '文章編輯',
+                'display_name' => '文章更新',
             ],
             [
                 'permission_group_id' => $postId,
@@ -221,7 +244,7 @@ class ProjectDefaultSeeder extends Seeder
             [
                 'permission_group_id' => $menuId,
                 'name' => 'update menu',
-                'display_name' => '選單編輯',
+                'display_name' => '選單更新',
             ],
             [
                 'permission_group_id' => $menuId,
@@ -251,7 +274,7 @@ class ProjectDefaultSeeder extends Seeder
             [
                 'permission_group_id' => $accountId,
                 'name' => 'update account',
-                'display_name' => '系統管理員編輯',
+                'display_name' => '系統管理員更新',
             ],
             [
                 'permission_group_id' => $accountId,
@@ -271,7 +294,7 @@ class ProjectDefaultSeeder extends Seeder
             [
                 'permission_group_id' => $roleId,
                 'name' => 'update role',
-                'display_name' => '角色編輯',
+                'display_name' => '角色更新',
             ],
             [
                 'permission_group_id' => $roleId,
@@ -291,7 +314,7 @@ class ProjectDefaultSeeder extends Seeder
             [
                 'permission_group_id' => $permissionId,
                 'name' => 'update permission',
-                'display_name' => '權限編輯',
+                'display_name' => '權限更新',
             ],
             [
                 'permission_group_id' => $permissionId,
@@ -312,14 +335,28 @@ class ProjectDefaultSeeder extends Seeder
         $role->givePermissionTo(Permission::all());
         $guestRole->syncPermissions([
             'view dashboard',
+            'view media',
             'view index',
             'view category',
             'view post',
+            'view menu',
         ]);
 
         // 將 super-admin 角色賦予使用者
         $user->assignRole('super admin');
         $guest->assignRole('guest');
+
+        $permissionIds  = Permission::pluck('id', 'name');
+        $viewDashboardId = $permissionIds['view dashboard'];
+        $viewMediaId = $permissionIds['view media'];
+        $viewIndexId = $permissionIds['view index'];
+        $viewCategoryId = $permissionIds['view category'];
+        $viewPostId = $permissionIds['view post'];
+        $viewMenuId = $permissionIds['view menu'];
+        $viewSystemId = $permissionIds['view system'];
+        $viewAccountId = $permissionIds['view account'];
+        $viewRoleId = $permissionIds['view role'];
+        $viewPermissionId = $permissionIds['view permission'];
 
         // 預設選單
         $parentMenus = [
@@ -330,8 +367,19 @@ class ProjectDefaultSeeder extends Seeder
                 'route' => '/dashboard',
                 'parent_id' => null,
                 'sort' => 1,
-                'is_active' => false,
-                'permission_id' => null,
+                'is_active' => true,
+                'permission_id' => $viewDashboardId,
+            ],
+
+            // 媒體庫
+            [
+                'title' => '媒體庫',
+                'icon' => 'fas fa-image',
+                'route' => '/media',
+                'parent_id' => null,
+                'sort' => 2,
+                'is_active' => true,
+                'permission_id' => $viewMediaId,
             ],
 
             // 頁面管理
@@ -340,7 +388,7 @@ class ProjectDefaultSeeder extends Seeder
                 'icon' => 'fas fa-file-alt',
                 'route' => null,
                 'parent_id' => null,
-                'sort' => 2,
+                'sort' => 3,
                 'is_active' => true,
                 'permission_id' => null,
             ],
@@ -351,7 +399,7 @@ class ProjectDefaultSeeder extends Seeder
                 'icon' => 'fas fa-edit',
                 'route' => null,
                 'parent_id' => null,
-                'sort' => 3,
+                'sort' => 4,
                 'is_active' => true,
                 'permission_id' => null,
             ],
@@ -362,7 +410,7 @@ class ProjectDefaultSeeder extends Seeder
                 'icon' => 'fas fa-server',
                 'route' => null,
                 'parent_id' => null,
-                'sort' => 4,
+                'sort' => 5,
                 'is_active' => true,
                 'permission_id' => null,
             ],
@@ -373,7 +421,7 @@ class ProjectDefaultSeeder extends Seeder
                 'icon' => 'fas fa-user-group',
                 'route' => null,
                 'parent_id' => null,
-                'sort' => 5,
+                'sort' => 6,
                 'is_active' => true,
                 'permission_id' => null,
             ],
@@ -387,7 +435,6 @@ class ProjectDefaultSeeder extends Seeder
         DB::table('menus')->insert($parentMenus);
 
         $parentMenuIds  = Menu::pluck('id', 'title');
-        $menuDashboardId = $parentMenuIds['儀錶板'];
         $menuIndexdId = $parentMenuIds['頁面管理'];
         $menuPostId = $parentMenuIds['文章管理'];
         $menuSystemId = $parentMenuIds['網站管理'];
@@ -401,7 +448,7 @@ class ProjectDefaultSeeder extends Seeder
                 'parent_id' => $menuIndexdId,
                 'sort' => 1,
                 'is_active' => true,
-                'permission_id' => null,
+                'permission_id' => $viewIndexId,
             ],
             [
                 'title' => '文章分類',
@@ -410,7 +457,7 @@ class ProjectDefaultSeeder extends Seeder
                 'parent_id' => $menuPostId,
                 'sort' => 1,
                 'is_active' => true,
-                'permission_id' => null,
+                'permission_id' => $viewCategoryId,
             ],
             [
                 'title' => '文章',
@@ -419,7 +466,7 @@ class ProjectDefaultSeeder extends Seeder
                 'parent_id' => $menuPostId,
                 'sort' => 2,
                 'is_active' => true,
-                'permission_id' => null,
+                'permission_id' => $viewPostId,
             ],
             [
                 'title' => '後台選單',
@@ -428,7 +475,7 @@ class ProjectDefaultSeeder extends Seeder
                 'parent_id' => $menuSystemId,
                 'sort' => 1,
                 'is_active' => true,
-                'permission_id' => null,
+                'permission_id' => $viewMenuId,
             ],
             [
                 'title' => '系統參數',
@@ -437,7 +484,7 @@ class ProjectDefaultSeeder extends Seeder
                 'parent_id' => $menuSystemId,
                 'sort' => 2,
                 'is_active' => false,
-                'permission_id' => null,
+                'permission_id' => $viewSystemId,
             ],
             [
                 'title' => '系統管理員',
@@ -446,7 +493,7 @@ class ProjectDefaultSeeder extends Seeder
                 'parent_id' => $menuAdminId,
                 'sort' => 1,
                 'is_active' => false,
-                'permission_id' => null,
+                'permission_id' => $viewAccountId,
             ],
             [
                 'title' => '角色',
@@ -455,7 +502,7 @@ class ProjectDefaultSeeder extends Seeder
                 'parent_id' => $menuAdminId,
                 'sort' => 2,
                 'is_active' => false,
-                'permission_id' => null,
+                'permission_id' => $viewRoleId,
             ],
             [
                 'title' => '權限',
@@ -464,7 +511,7 @@ class ProjectDefaultSeeder extends Seeder
                 'parent_id' => $menuAdminId,
                 'sort' => 3,
                 'is_active' => false,
-                'permission_id' => null,
+                'permission_id' => $viewPermissionId,
             ],
         ];
 

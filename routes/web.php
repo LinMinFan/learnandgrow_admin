@@ -12,6 +12,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ConfigController;
+use App\Http\Controllers\MediaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +48,13 @@ Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
     // 儀表板
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // 媒體庫
+    Route::prefix('media')->group(function () {
+        Route::get('/', [MediaController::class, 'index'])->name('media.index');
+        Route::post('/', [MediaController::class, 'store'])->name('media.store');
+        Route::delete('/{id}', [MediaController::class, 'destroy'])->name('media.destroy');
+    });
+
     // 頁面管理
 
 
@@ -56,7 +64,7 @@ Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
     // 網站管理
     Route::prefix('system')->group(function () {
         Route::get('/config', [ConfigController::class, 'config'])->name('system.config');
-        Route::put('/update', [ConfigController::class, 'update'])->name('system.config.update');
+        Route::put('/config', [ConfigController::class, 'update'])->name('system.config.update');
         Route::get('/menu', [MenuController::class, 'index'])->name('system.menu');
         Route::get('/menu/create', [MenuController::class, 'create'])->name('system.menu.create');
         Route::post('/menu', [MenuController::class, 'store'])->name('system.menu.store');

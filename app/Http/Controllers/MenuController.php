@@ -27,7 +27,9 @@ class MenuController extends Controller
             ->orderBy('sort')
             ->get()
             ->filter(function ($menu) {
-                return $menu->route === '/dashboard' || $menu->children->isNotEmpty(); // 過濾掉沒有子選單的父選單
+                /* return $menu->route === '/dashboard' || $menu->route === '/media' || $menu->children->isNotEmpty(); */
+                // 媒體庫儀表板不可修改變更
+                return $menu->children->isNotEmpty(); // 過濾掉沒有子選單的父選單
             })
             ->map(function ($menu) {
                 $menu->children = $menu->children->sortBy('sort')->values();
