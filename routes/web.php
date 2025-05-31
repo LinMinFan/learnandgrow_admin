@@ -11,6 +11,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
+use App\Http\Controllers\ConfigController;
 
 /*
 |--------------------------------------------------------------------------
@@ -54,6 +55,8 @@ Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
 
     // 網站管理
     Route::prefix('system')->group(function () {
+        Route::get('/config', [ConfigController::class, 'config'])->name('system.config');
+        Route::put('/update', [ConfigController::class, 'update'])->name('system.config.update');
         Route::get('/menu', [MenuController::class, 'index'])->name('system.menu');
         Route::get('/menu/create', [MenuController::class, 'create'])->name('system.menu.create');
         Route::post('/menu', [MenuController::class, 'store'])->name('system.menu.store');
