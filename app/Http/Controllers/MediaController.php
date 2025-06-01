@@ -21,8 +21,15 @@ class MediaController extends Controller
             return $response;
         };
 
-        $mediaData = [];
+        $mediaItems = Media::all();
 
-        return Inertia::render('Media/Index', compact('mediaData'));
+        // 根據 path 中的資料夾（去掉檔案名）做分組
+        $grouped = $mediaItems->groupBy(function ($item) {
+            return dirname($item->path); // 例如 "uploads/avatar"
+        });
+
+        return Inertia::render('Media/Index', [
+            'groupedMedia' => $grouped,
+        ]);
     }
 }
