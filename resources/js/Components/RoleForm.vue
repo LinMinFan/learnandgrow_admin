@@ -10,7 +10,7 @@ const props = defineProps({
         default: 'create'
     },
     role: {
-        type: Object,
+        type: Array,
         default: () => ({
             id: '',
             name: '',
@@ -19,7 +19,7 @@ const props = defineProps({
         })
     },
     permissionGroups: {
-        type: Object,
+        type: Array,
         required: true
     },
 })

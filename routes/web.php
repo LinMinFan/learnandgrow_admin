@@ -51,7 +51,7 @@ Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
     // 媒體庫
     Route::prefix('media')->group(function () {
         Route::get('/', [MediaController::class, 'index'])->name('media.index');
-        Route::post('/', [MediaController::class, 'store'])->name('media.store');
+        Route::put('/', [MediaController::class, 'update'])->name('media.update');
         Route::delete('/{id}', [MediaController::class, 'destroy'])->name('media.destroy');
     });
 

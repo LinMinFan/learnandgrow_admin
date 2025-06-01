@@ -5,7 +5,7 @@ import RoleForm from '@/Components/RoleForm.vue'
 
 
 const { permissionGroups } = defineProps({
-    permissionGroups: Object
+    permissionGroups: Array
 })
 
 const isEdit = ref(false)

@@ -5,8 +5,8 @@ import MenuForm from '@/Components/MenuForm.vue'
 
 
 const { parents, permissions } = defineProps({
-  parents: Object,
-  permissions: Object,
+  parents: Array,
+  permissions: Array,
   menu: Object,
 })
 

@@ -5,7 +5,7 @@ import PermissionForm from '@/Components/PermissionForm.vue'
 
 
 const { permissionGroups } = defineProps({
-    permissionGroups: Object,
+    permissionGroups: Array,
     permission: Object
 })
 

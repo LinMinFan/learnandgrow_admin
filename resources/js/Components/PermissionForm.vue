@@ -10,7 +10,7 @@ const props = defineProps({
         default: 'create'
     },
     permissionGroups: {
-        type: Object,
+        type: Array,
         required: true
     },
     permission: {

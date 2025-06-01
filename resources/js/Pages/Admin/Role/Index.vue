@@ -9,7 +9,7 @@ import ConfirmDialog from '@/Components/ConfirmDialog.vue';
 import axios from 'axios'
 
 const props = defineProps({
-    roleList: Object,
+    roleList: Array,
 })
 
 const roleList = ref(cloneDeep(props.roleList))

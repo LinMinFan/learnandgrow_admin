@@ -26,11 +26,11 @@ const props = defineProps({
         })
     },
     parents: {
-        type: Object,
+        type: Array,
         required: true
     },
     permissions: {
-        type: Object,
+        type: Array,
         required: true
     },
 })

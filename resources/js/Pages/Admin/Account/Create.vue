@@ -5,7 +5,7 @@ import AccountForm from '@/Components/AccountForm.vue'
 
 
 const { roles } = defineProps({
-    roles: Object
+    roles: Array
 })
 
 const isEdit = ref(false)

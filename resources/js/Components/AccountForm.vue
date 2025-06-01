@@ -22,7 +22,7 @@ const props = defineProps({
         })
     },
     roles: {
-        type: Object,
+        type: Array,
         required: true
     },
 })
