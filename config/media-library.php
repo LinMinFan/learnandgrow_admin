@@ -12,7 +12,8 @@ return [
      * The maximum file size of an item in bytes.
      * Adding a larger file will result in an exception.
      */
-    'max_file_size' => 1024 * 1024 * 10, // 10MB
+    //'max_file_size' => 1024 * 1024 * 10, // 10MB
+    'max_file_size' => 1024 * 1024 * 1, // 1MB
 
     /*
      * This queue connection will be used to generate derived and responsive images.
@@ -34,7 +35,7 @@ return [
     /*
      * The fully qualified class name of the media model.
      */
-    'media_model' => Spatie\MediaLibrary\MediaCollections\Models\Media::class,
+    'media_model' => App\Models\Media::class,
 
     /*
      * When enabled, media collections will be serialised using the default

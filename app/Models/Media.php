@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as spatieMedia;
 
-class Media extends Model
+class Media extends spatieMedia
 {
-    use HasFactory;
+
 }
