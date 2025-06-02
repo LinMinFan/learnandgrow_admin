@@ -78,23 +78,15 @@ function getFileColorClass(mimeType) {
 
 // 導航到資料夾
 function navigateToFolder(folderId) {
-    router.visit(route('media.index'), {
-        data: {
-            media_folder_id: folderId
-        }
-    })
+    router.get(route('media.show', folderId))
 }
 
 // 麵包屑導航
 function navigateToBreadcrumb(folderId) {
     if (folderId) {
-        router.visit(route('media.index'), {
-            data: {
-                media_folder_id: folderId
-            }
-        })
+        router.get(route('media.show', folderId))
     } else {
-        router.visit(route('media.index'))
+        router.get(route('media.index'))
     }
     
 }
@@ -162,9 +154,9 @@ function handleFileUpload(event) {
     files.forEach(file => {
         formData.append('files[]', file)
     })
-    formData.append('media_folder_id', props.currentFolder.id)
+    formData.append('folder_id', props.currentFolder.id)
 
-    router.put(route('media.update'), formData, {
+    router.post(route('media.store'), formData, {
         onSuccess: () => {
             event.target.value = '' // 清空 input
         }
@@ -195,9 +187,18 @@ function handleDrop(event) {
     files.forEach(file => {
         formData.append('files[]', file)
     })
-    formData.append('media_folder_id', props.currentFolder.id)
+    formData.append('id', props.currentFolder.id)
 
-    router.put(route('media.update'), formData)
+    router.post(route('media.store'), formData)
+}
+
+// 檔案大小格式化函數
+function formatFileSize(bytes) {
+    if (bytes === 0) return '0 Bytes'
+    const k = 1024
+    const sizes = ['Bytes', 'KB', 'MB', 'GB']
+    const i = Math.floor(Math.log(bytes) / Math.log(k))
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
 }
 </script>
 
@@ -304,17 +305,6 @@ function handleDrop(event) {
             @confirm="deleteSelectedItems" @cancel="showDeleteDialog = false" />
     </AdminLayout>
 </template>
-
-<script>
-// 檔案大小格式化函數
-function formatFileSize(bytes) {
-    if (bytes === 0) return '0 Bytes'
-    const k = 1024
-    const sizes = ['Bytes', 'KB', 'MB', 'GB']
-    const i = Math.floor(Math.log(bytes) / Math.log(k))
-    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i]
-}
-</script>
 
 <style scoped>
 .grid-cols-6 {

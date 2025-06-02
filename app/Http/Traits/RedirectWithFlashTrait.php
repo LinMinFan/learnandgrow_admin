@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Log;
 
 trait RedirectWithFlashTrait
 {
-    public function redirectIfHasFlashParams($request, $routeName)
+    public function redirectIfHasFlashParams($request, $routeName, $params = [])
     {
         $status = null;
         $message = null;
@@ -19,7 +19,7 @@ trait RedirectWithFlashTrait
         if (!empty($status)) {
             $message = $request->get($status);
             
-            return redirect()->route($routeName)->with([$status => $message]);
+            return redirect()->route($routeName, $params)->with([$status => $message]);
         }
     }
 }

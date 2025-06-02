@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 class MediaController extends Controller
 {
     use RedirectWithFlashTrait;
-    
+
     public function index(Request $request)
     {
         // 如果 URL 有成功參數，設定到 session flash
@@ -23,26 +23,45 @@ class MediaController extends Controller
             return $response;
         };
 
-        $folderId = $request->get('media_folder_id', null);
-        $currentFolder = null;
+        $breadcrumbs = [
+            ['id' => null, 'name' => '媒體庫',],
+        ];
+
+        // 取得預設資料夾
+        $folders = MediaFolder::getDefaultFolders();
+
+        return Inertia::render('Media/Index', [
+            'folders' => $folders,
+            'files' => [],
+            'currentFolder' => null,
+            'breadcrumbs' => $breadcrumbs,
+            'canDelete' => false, // 第0層不可刪除
+            'canUpload' => false, // 第0層不可上傳
+        ]);
+    }
+
+    public function show(Request $request, $id)
+    {
+        // 如果 URL 有成功參數，設定到 session flash
+        if ($response = $this->redirectIfHasFlashParams($request, 'media.index', ['id' => $id])) {
+            return $response;
+        };
+
         $breadcrumbs = [];
 
-        if ($folderId) {
-            $currentFolder = $this->getFolderWithParents($folderId);
-            $breadcrumbs = $this->getBreadcrumbs($currentFolder);
-        }
+        $currentFolder = $this->getFolderWithParents($id);
+        $breadcrumbs = $this->getBreadcrumbs($currentFolder);
 
         // 取得當前資料夾下的子資料夾
-        $folders = MediaFolder::where('parent_id', $folderId)
-            ->orderBy('name')
-            ->get();
+        $folders = [];
+        if ($currentFolder->children()->exists()) {
+            $folders = $currentFolder->children()->get();
+        }
 
         // 取得當前資料夾下的檔案（只在非根目錄時顯示）
         $files = [];
-        if ($folderId) {
-            $files = Media::where('media_folder_id', $folderId)
-                ->orderBy('name')
-                ->get();
+        if ($currentFolder->getMediaCount() > 0) {
+            $files = $currentFolder->getFolderMedia();
         }
 
         return Inertia::render('Media/Index', [
@@ -50,88 +69,46 @@ class MediaController extends Controller
             'files' => $files,
             'currentFolder' => $currentFolder,
             'breadcrumbs' => $breadcrumbs,
-            'canDelete' => $folderId !== null, // 第0層不可刪除
-            'canUpload' => $folderId !== null, // 第0層不可上傳
+            'canDelete' => true,
+            'canUpload' => true,
         ]);
     }
 
-    public function update(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'files.*' => 'required|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:10240',
-            'media_folder_id' => 'required|exists:media_folders,id'
+            'folder_id' => 'required|exists:media_folders,id'
         ]);
 
-        $uploadedFiles = [];
+        $uploadedFiles = $request->file('files');
+        $folderId = $request->get('folder_id');
+        $folder = MediaFolder::findOrFail($folderId);
 
         DB::beginTransaction();
         try {
-            foreach ($request->file('files') as $file) {
-                $filename = time() . '_' . $file->getClientOriginalName();
-                $path = $file->storeAs('media', $filename, 'public');
-
-
-                $media = Media::create([
-                    'name' => $file->getClientOriginalName(),
-                    'filename' => $filename,
-                    'path' => $path,
-                    'mime_type' => $file->getMimeType(),
-                    'size' => $file->getSize(),
-                    'folder_id' => $request->folder_id,
-                ]);
-
-                $uploadedFiles[] = $media;
+            foreach ($uploadedFiles as $file) {
+                $folder->addFile($file);
             }
 
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json(['message' => $e->getMessage()], 400);
+            return back()->with('error', '檔案上傳失敗！' . $e->getMessage());
         }
 
-        return response()->json(['message' => '檔案上傳成功!'], 200);
+        return back()->with('success', '檔案上傳成功！');
     }
 
     public function deleteSelected(Request $request)
     {
-        $request->validate([
-            'selected_items' => 'required|array',
-            'selected_items.*.type' => 'required|in:folder,file',
-            'selected_items.*.id' => 'required|integer',
-        ]);
-
-        DB::transaction(function () use ($request) {
-            foreach ($request->selected_items as $item) {
-                if ($item['type'] === 'folder') {
-                    $folder = MediaFolder::findOrFail($item['id']);
-                    // 遞歸刪除子資料夾和檔案
-                    $this->deleteFolderRecursive($folder);
-                } else {
-                    $file = Media::findOrFail($item['id']);
-                    // 刪除實際檔案
-                    Storage::disk('public')->delete($file->path);
-                    $file->delete();
-                }
-            }
-        });
 
         return back()->with('success', '選取的項目已刪除！');
     }
 
     private function deleteFolderRecursive($folder)
     {
-        // 刪除資料夾內的所有檔案
-        foreach ($folder->media as $media) {
-            Storage::disk('public')->delete($media->path);
-            $media->delete();
-        }
 
-        // 遞歸刪除子資料夾
-        foreach ($folder->children as $child) {
-            $this->deleteFolderRecursive($child);
-        }
-
-        $folder->delete();
     }
 
     public function getFolderWithParents($folderId)
