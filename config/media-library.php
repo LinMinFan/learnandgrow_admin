@@ -6,14 +6,14 @@ return [
      * The disk on which to store added files and derived images by default. Choose
      * one or more of the disks you've configured in config/filesystems.php.
      */
-    'disk_name' => env('MEDIA_DISK', 'public'),
+    'disk_name' => env('MEDIA_DISK', 'media'),
 
     /*
      * The maximum file size of an item in bytes.
      * Adding a larger file will result in an exception.
      */
     //'max_file_size' => 1024 * 1024 * 10, // 10MB
-    'max_file_size' => 1024 * 1024 * 1, // 1MB
+    'max_file_size' => 1024 * 1024 * 2, // 2MB
 
     /*
      * This queue connection will be used to generate derived and responsive images.
@@ -84,6 +84,7 @@ return [
      */
     'custom_path_generators' => [
         // Model::class => PathGenerator::class
+        \App\Models\MediaFolder::class => \App\MediaLibrary\CustomPathGenerator::class,
         // or
         // 'model_morph_alias' => PathGenerator::class
     ],

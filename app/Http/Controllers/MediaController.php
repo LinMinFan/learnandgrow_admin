@@ -28,7 +28,7 @@ class MediaController extends Controller
         ];
 
         // 取得預設資料夾
-        $folders = MediaFolder::getDefaultFolders();
+        $folders = MediaFolder::root()->default()->orderBy('name')->get();
 
         return Inertia::render('Media/Index', [
             'folders' => $folders,
@@ -49,14 +49,11 @@ class MediaController extends Controller
 
         $breadcrumbs = [];
 
-        $currentFolder = $this->getFolderWithParents($id);
-        $breadcrumbs = $this->getBreadcrumbs($currentFolder);
+        $currentFolder = MediaFolder::with('parent')->findOrFail($id);
+        $breadcrumbs = $currentFolder->getBreadcrumbs();
 
         // 取得當前資料夾下的子資料夾
-        $folders = [];
-        if ($currentFolder->children()->exists()) {
-            $folders = $currentFolder->children()->get();
-        }
+        $folders = $currentFolder->children;
 
         // 取得當前資料夾下的檔案（只在非根目錄時顯示）
         $files = [];
@@ -77,7 +74,7 @@ class MediaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'files.*' => 'required|file|mimes:jpg,jpeg,png,gif,pdf,doc,docx|max:10240',
+            'files.*' => 'required|file|mimes:jpg,jpeg,png,gif,pdf|max:10240',
             'folder_id' => 'required|exists:media_folders,id'
         ]);
 
@@ -94,54 +91,70 @@ class MediaController extends Controller
             DB::commit();
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->with('error', '檔案上傳失敗！' . $e->getMessage());
+            return redirect()->route('media.show', $folderId)->with('error', '檔案上傳失敗！' . $e->getMessage());
         }
 
-        return back()->with('success', '檔案上傳成功！');
+        return redirect()->route('media.show', $folderId)->with('success', '檔案上傳成功！');
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $request->validate([
+            'folder_id' => 'required|exists:media_folders,id'
+        ]);
+
+        $folderId = $request->get('folder_id');
+
+        DB::beginTransaction();
+        try {
+            $media = Media::findOrFail($id);
+            $media->delete();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->route('media.show', $folderId)->with('error', '檔案刪除失敗！' . $e->getMessage());
+        }
+
+        return redirect()->route('media.show', $folderId)->with('success', '檔案刪除成功！');
     }
 
     public function deleteSelected(Request $request)
     {
-
-        return back()->with('success', '選取的項目已刪除！');
-    }
-
-    private function deleteFolderRecursive($folder)
-    {
-
-    }
-
-    public function getFolderWithParents($folderId)
-    {
-        $folder = MediaFolder::findOrFail($folderId);
-
-        $relations = collect();
-        for ($i = 0; $i < $folder->depth; $i++) {
-            $relations->push(str_repeat('parent.', $i) . 'parent');
-        }
-
-        return MediaFolder::with($relations->toArray())->findOrFail($folderId);
-    }
-
-    public function getBreadcrumbs($folder)
-    {
-        $breadcrumbs = [];
-        $current = $folder;
-
-        while ($current) {
-            array_unshift($breadcrumbs, [
-                'id' => $current->id,
-                'name' => $current->name,
-            ]);
-            $current = $current->parent;
-        }
-
-        // 加入根目錄
-        array_unshift($breadcrumbs, [
-            'id' => null,
-            'name' => '媒體庫',
+        $request->validate([
+            'selected_items' => 'required|array',
+            'selected_items.*.type' => 'required|in:file',
+            'selected_items.*.id' => 'required|integer|exists:media,id',
+            'folder_id' => 'required|exists:media_folders,id'
         ]);
 
-        return $breadcrumbs;
+        $selectedItems = $request->get('selected_items');
+        $folderId = $request->get('folder_id');
+
+        // 過濾只處理檔案類型
+        $mediaIds = collect($selectedItems)
+            ->filter(fn($item) => $item['type'] === 'file')
+            ->pluck('id')
+            ->toArray();
+
+        if (empty($mediaIds)) {
+            return redirect()->route('media.show', $folderId)->with('error', '沒有選取有效的檔案！');
+        }
+
+        DB::beginTransaction();
+        try {
+            foreach ($mediaIds as $mediaId) {
+                $media = Media::findOrFail($mediaId);
+                $media->delete();
+            }
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::info($e->getMessage());
+            return redirect()->route('media.show', $folderId)->with('error', '批量刪除失敗！' . $e->getMessage());
+        }
+
+        return redirect()->route('media.show', $folderId)->with('success', '選取的檔案已刪除！');
     }
 }

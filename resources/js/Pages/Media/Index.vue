@@ -3,6 +3,7 @@ import { ref, computed } from 'vue'
 import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { router } from '@inertiajs/vue3'
 import ConfirmDialog from '@/Components/ConfirmDialog.vue'
+import { useTopGlobalNotify } from '@/Composables/useTopGlobalNotify'
 
 const props = defineProps({
     folders: Array,
@@ -16,9 +17,11 @@ const props = defineProps({
 // 選取狀態管理
 const selectedItems = ref(new Set())
 const selectAll = ref(false)
+const mediaToDelete = ref(false)
 const showDeleteDialog = ref(false)
 const uploadInput = ref(null)
 const isDragging = ref(false)
+const { errorNotify } = useTopGlobalNotify()
 
 // 所有項目（資料夾 + 檔案）
 const allItems = computed(() => {
@@ -126,20 +129,43 @@ function isItemSelected(item) {
 
 // 刪除選取項目
 function deleteSelectedItems() {
+    handleCancelDelete();
     const items = Array.from(selectedItems.value).map(key => {
         const [type, id] = key.split('-')
         return { type, id: parseInt(id) }
     })
 
-    router.delete(route('media.deleteSelected'), {
-        data: { selected_items: items },
+    // 檢查資料格式
+    console.log('Sending data:', {
+        selected_items: items,
+        folder_id: props.currentFolder.id
+    })
+
+    router.post(route('media.deleteSelected'), {
+        selected_items: items,
+        folder_id: props.currentFolder.id,
+    }, {
         onSuccess: () => {
             selectedItems.value.clear()
             selectAll.value = false
             showDeleteDialog.value = false
+        },
+        onError: (errors) => {
+            console.log('Validation errors:', errors)
+            errorNotify('Validation errors:', errors)
         }
     })
 }
+
+const handleDeleteClick = () => {
+    mediaToDelete.value = true;
+    showDeleteDialog.value = true;
+};
+
+const handleCancelDelete = () => {
+    mediaToDelete.value = false;
+    showDeleteDialog.value = false;
+};
 
 // 檔案上傳
 function triggerFileUpload() {
@@ -187,7 +213,7 @@ function handleDrop(event) {
     files.forEach(file => {
         formData.append('files[]', file)
     })
-    formData.append('id', props.currentFolder.id)
+    formData.append('folder_id', props.currentFolder.id)
 
     router.post(route('media.store'), formData)
 }
@@ -217,7 +243,7 @@ function formatFileSize(bytes) {
                         <i class="fas fa-upload"></i> 上傳檔案
                     </button>
 
-                    <button v-if="canDelete && selectedItems.size > 0" @click="showDeleteDialog = true"
+                    <button v-if="canDelete && selectedItems.size > 0" @click.stop="handleDeleteClick"
                         class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition">
                         <i class="fas fa-trash-can"></i> 刪除選取 ({{ selectedItems.size }})
                     </button>
@@ -301,8 +327,15 @@ function formatFileSize(bytes) {
         <input ref="uploadInput" type="file" multiple @change="handleFileUpload" class="hidden">
 
         <!-- 刪除確認對話框 -->
-        <ConfirmDialog v-if="showDeleteDialog" title="確認刪除" :message="`確定要刪除選取的 ${selectedItems.size} 個項目嗎？此操作無法復原。`"
-            @confirm="deleteSelectedItems" @cancel="showDeleteDialog = false" />
+        <ConfirmDialog 
+            v-if="mediaToDelete" 
+            :show="showDeleteDialog"
+            title="確認刪除" 
+            :confirmMessage="`確定要刪除選取的 ${selectedItems.size} 個項目嗎？此操作無法復原。`"
+            confirmButtonText="確定"
+            @confirm="deleteSelectedItems" 
+            @cancel="handleCancelDelete" 
+        />
     </AdminLayout>
 </template>
 

@@ -54,6 +54,7 @@ Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
         Route::get('/{id}', [MediaController::class, 'show'])->name('media.show');
         Route::post('/', [MediaController::class, 'store'])->name('media.store');
         Route::delete('/{id}', [MediaController::class, 'destroy'])->name('media.destroy');
+        Route::post('/delete-selected', [MediaController::class, 'deleteSelected'])->name('media.deleteSelected');
     });
 
     // 頁面管理

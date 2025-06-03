@@ -2,9 +2,9 @@
 
 namespace App\Models;
 
-use Spatie\MediaLibrary\MediaCollections\Models\Media as spatieMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media as SpatieMedia;
 
-class Media extends spatieMedia
+class Media extends SpatieMedia
 {
-
+    
 }

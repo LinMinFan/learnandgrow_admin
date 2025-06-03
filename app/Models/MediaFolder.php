@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
@@ -33,8 +34,7 @@ class MediaFolder extends Model implements HasMedia
     {
         $this->addMediaCollection($this->getCollectionName())
             ->acceptsMimeTypes(['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'])
-            ->useDisk('media')
-            ->usePath($this->path); // 關鍵：指定儲存路徑;
+            ->useDisk('media');
     }
 
     /**
@@ -100,22 +100,28 @@ class MediaFolder extends Model implements HasMedia
     }
 
     /**
-     * 取得根層預設資料夾
+     * 取得麵包屑路徑
      */
-    public static function getDefaultFolders()
+    public function getBreadcrumbs(): array
     {
-        return self::where('is_default', true)
-            ->where('depth', 0)
-            ->orderBy('name')
-            ->get();
-    }
+        $breadcrumbs = [];
+        $current = $this;
 
-    /**
-     * 根據 path 查找資料夾
-     */
-    public static function findByPath(string $path)
-    {
-        return self::where('path', $path)->first();
+        while ($current) {
+            array_unshift($breadcrumbs, [
+                'id' => $current->id,
+                'name' => $current->name,
+            ]);
+            $current = $current->parent;
+        }
+
+        // 加入根目錄
+        array_unshift($breadcrumbs, [
+            'id' => null,
+            'name' => '媒體庫',
+        ]);
+
+        return $breadcrumbs;
     }
 
     /**
@@ -132,5 +138,29 @@ class MediaFolder extends Model implements HasMedia
     public function getMediaCount(): int
     {
         return $this->getMedia($this->getCollectionName())->count();
+    }
+
+    /**
+     * Scope: 預設資料夾
+     */
+    public function scopeDefault(Builder $query): Builder
+    {
+        return $query->where('is_default', true);
+    }
+
+    /**
+     * Scope: 根層資料夾
+     */
+    public function scopeRoot(Builder $query): Builder
+    {
+        return $query->where('depth', 0);
+    }
+
+    /**
+     * Scope: 依路徑查找
+     */
+    public function scopeByPath(Builder $query, string $path): Builder
+    {
+        return $query->where('path', $path);
     }
 }
