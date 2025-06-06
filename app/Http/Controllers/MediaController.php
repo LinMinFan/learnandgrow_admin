@@ -63,14 +63,15 @@ class MediaController extends Controller
             $folders = $currentFolder->children;
 
             // 取得當前資料夾下的檔案（只在非根目錄時顯示）
-            $files = [];
+            $mediaFiles = [];
             if ($currentFolder->getMediaCount() > 0) {
                 $files = $currentFolder->getFolderMedia();
+                $mediaFiles = $this->getFormattedMedia($files);
             }
 
             return Inertia::render('Media/Index', [
                 'folders' => $folders,
-                'files' => $files,
+                'files' => $mediaFiles,
                 'currentFolder' => $currentFolder,
                 'breadcrumbs' => $breadcrumbs,
                 'canDelete' => true,
@@ -110,7 +111,7 @@ class MediaController extends Controller
                 try {
                     $folder->addFile($file);
                     $uploadResults['success']++;
-                } catch (Exception $e) {
+                } catch (\Exception $e) {
                     $uploadResults['failed']++;
                     $uploadResults['errors'][] = $file->getClientOriginalName() . ': ' . $e->getMessage();
 
@@ -214,5 +215,40 @@ class MediaController extends Controller
 
             return redirect()->route('media.show', $folderId)->with('error', '批量刪除失敗：' . $e->getMessage());
         }
+    }
+
+    /**
+     * 取得格式化後的媒體檔案（含縮圖與 icon 訊息）
+     */
+    public function getFormattedMedia($medias) 
+    {
+        
+        // 為每個檔案添加縮圖 URL
+        $mediaFiles = $medias->map(function ($media) {
+            $mediaData = $media->toArray();
+            
+            // 檢查是否為圖片類型
+            $isImage = str_starts_with($media->mime_type, 'image/');
+            
+            if ($isImage) {
+                try {
+                    // 生成縮圖 URL（如果存在）
+                    $mediaData['thumbnail_url'] = $media->hasGeneratedConversion('thumb') 
+                        ? $media->getUrl('thumb') 
+                        : $media->getUrl();
+                    $mediaData['has_thumbnail'] = true;
+                } catch (\Exception $e) {
+                    $mediaData['thumbnail_url'] = null;
+                    $mediaData['has_thumbnail'] = false;
+                }
+            } else {
+                $mediaData['thumbnail_url'] = null;
+                $mediaData['has_thumbnail'] = false;
+            }
+            
+            return $mediaData;
+        });
+
+        return $mediaFiles;
     }
 }
