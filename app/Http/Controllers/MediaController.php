@@ -107,8 +107,16 @@ class MediaController extends Controller
 
         DB::beginTransaction();
         try {
+            $existingFileNames = $folder->getFolderMedia()->pluck('file_name')->toArray();
+
             foreach ($uploadedFiles as $file) {
                 try {
+                    $originalName = $file->getClientOriginalName();
+
+                    if (in_array($originalName, $existingFileNames)) {
+                        throw new \Exception("{$originalName}: 檔案已存在");
+                    }
+
                     $folder->addFile($file);
                     $uploadResults['success']++;
                 } catch (\Exception $e) {
@@ -220,21 +228,21 @@ class MediaController extends Controller
     /**
      * 取得格式化後的媒體檔案（含縮圖與 icon 訊息）
      */
-    public function getFormattedMedia($medias) 
+    public function getFormattedMedia($medias)
     {
-        
+
         // 為每個檔案添加縮圖 URL
         $mediaFiles = $medias->map(function ($media) {
             $mediaData = $media->toArray();
-            
+
             // 檢查是否為圖片類型
             $isImage = str_starts_with($media->mime_type, 'image/');
-            
+
             if ($isImage) {
                 try {
                     // 生成縮圖 URL（如果存在）
-                    $mediaData['thumbnail_url'] = $media->hasGeneratedConversion('thumb') 
-                        ? $media->getUrl('thumb') 
+                    $mediaData['thumbnail_url'] = $media->hasGeneratedConversion('thumb')
+                        ? $media->getUrl('thumb')
                         : $media->getUrl();
                     $mediaData['has_thumbnail'] = true;
                 } catch (\Exception $e) {
@@ -245,7 +253,7 @@ class MediaController extends Controller
                 $mediaData['thumbnail_url'] = null;
                 $mediaData['has_thumbnail'] = false;
             }
-            
+
             return $mediaData;
         });
 
