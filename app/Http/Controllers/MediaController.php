@@ -7,7 +7,6 @@ use Inertia\Inertia;
 use App\Models\MediaFolder;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Support\Facades\Log;
-use App\Http\Requests\StoreMenuRequest;
 use App\Http\Traits\RedirectWithFlashTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;

@@ -1,4 +1,4 @@
-// composables/useMediaNavigation.js
+// Composables/Media/useMediaNavigation.js
 import { router } from '@inertiajs/vue3'
 
 export function useMediaNavigation() {

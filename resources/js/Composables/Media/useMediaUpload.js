@@ -1,4 +1,4 @@
-// composables/useMediaUpload.js
+// Composables/Media/useMediaUpload.js
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 

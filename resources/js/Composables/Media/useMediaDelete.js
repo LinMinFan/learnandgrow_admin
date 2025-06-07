@@ -1,4 +1,4 @@
-// composables/useMediaDelete.js
+// Composables/Media/useMediaDelete.js
 import { ref } from 'vue'
 import { router } from '@inertiajs/vue3'
 import { useTopGlobalNotify } from '@/Composables/useTopGlobalNotify'

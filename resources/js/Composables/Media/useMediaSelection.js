@@ -1,4 +1,4 @@
-// composables/useMediaSelection.js
+// Composables/Media/useMediaSelection.js
 import { ref, computed } from 'vue'
 
 export function useMediaSelection() {

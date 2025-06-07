@@ -12,10 +12,10 @@ import MediaEmptyState from '@/Components/Media/MediaEmptyState.vue'
 import MediaDragOverlay from '@/Components/Media/MediaDragOverlay.vue'
 
 // Composables
-import { useMediaSelection } from '@/composables/Media/useMediaSelection'
-import { useMediaUpload } from '@/composables/Media/useMediaUpload'
-import { useMediaDelete } from '@/composables/Media/useMediaDelete'
-import { useMediaNavigation } from '@/composables/Media/useMediaNavigation'
+import { useMediaSelection } from '@/Composables/Media/useMediaSelection'
+import { useMediaUpload } from '@/Composables/Media/useMediaUpload'
+import { useMediaDelete } from '@/Composables/Media/useMediaDelete'
+import { useMediaNavigation } from '@/Composables/Media/useMediaNavigation'
 
 // 工具函數
 import { getFileIconClass, getFileColorClass } from '@/utils/mediaUtils'
