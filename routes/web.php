@@ -13,6 +13,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\MediaController;
+use App\Http\Controllers\ContactFormController;
 
 /*
 |--------------------------------------------------------------------------
@@ -55,6 +56,13 @@ Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
         Route::post('/', [MediaController::class, 'store'])->name('media.store');
         Route::delete('/{id}', [MediaController::class, 'destroy'])->name('media.destroy');
         Route::post('/delete-selected', [MediaController::class, 'deleteSelected'])->name('media.deleteSelected');
+    });
+
+    // 表單管理
+    Route::prefix('form')->group(function () {
+        Route::get('/', [ContactFormController::class, 'index'])->name('form.index');
+        Route::get('/show', [ContactFormController::class, 'show'])->name('form.show');
+        Route::delete('/{id}', [ContactFormController::class, 'destroy'])->name('form.destroy');
     });
 
     // 頁面管理

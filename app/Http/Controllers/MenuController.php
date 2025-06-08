@@ -28,7 +28,7 @@ class MenuController extends Controller
             ->get()
             ->filter(function ($menu) {
                 /* return $menu->route === '/dashboard' || $menu->route === '/media' || $menu->children->isNotEmpty(); */
-                // 媒體庫儀表板不可修改變更
+                // 儀表板 媒體庫 聯絡表單 不可修改變更
                 return $menu->children->isNotEmpty(); // 過濾掉沒有子選單的父選單
             })
             ->map(function ($menu) {

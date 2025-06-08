@@ -66,8 +66,8 @@ class AppServiceProvider extends ServiceProvider
                         return $parent;
                     })
                     ->filter(function ($parent) {
-                        // 儀錶板/媒體庫 一定顯示；其餘若無子選單則不顯示
-                        return $parent->route === '/dashboard' || $parent->route === '/media' || $parent->children->isNotEmpty();
+                        // 儀錶板 媒體庫 聯絡表單 一定顯示；其餘若無子選單則不顯示
+                        return $parent->route === '/dashboard' || $parent->route === '/media' || $parent->route === '/form' || $parent->children->isNotEmpty();
                     })
                     ->sortBy('sort')
                     ->values();

@@ -83,59 +83,66 @@ class ProjectDefaultSeeder extends Seeder
                 'is_active' => true,
             ],
             [
+                'name' => 'form',
+                'display_name' => '聯絡表單',
+                'description' => '聯絡表單相關',
+                'sort' => 3,
+                'is_active' => true,
+            ],
+            [
                 'name' => 'index',
                 'display_name' => '首頁管理',
                 'description' => '首頁相關',
-                'sort' => 3,
+                'sort' => 4,
                 'is_active' => true,
             ],
             [
                 'name' => 'category',
                 'display_name' => '文章類別管理',
                 'description' => '文章類別相關',
-                'sort' => 4,
+                'sort' => 5,
                 'is_active' => true,
             ],
             [
                 'name' => 'post',
                 'display_name' => '文章管理',
                 'description' => '文章相關',
-                'sort' => 5,
+                'sort' => 6,
                 'is_active' => true,
             ],
             [
                 'name' => 'menu',
                 'display_name' => '選單管理',
                 'description' => '選單相關',
-                'sort' => 6,
+                'sort' => 7,
                 'is_active' => true,
             ],
             [
                 'name' => 'system',
                 'display_name' => '系統參數管理',
                 'description' => '系統參數相關',
-                'sort' => 7,
+                'sort' => 8,
                 'is_active' => true,
             ],
             [
                 'name' => 'account',
                 'display_name' => '系統管理員帳號管理',
                 'description' => '系統管理員帳號相關',
-                'sort' => 8,
+                'sort' => 9,
                 'is_active' => true,
             ],
             [
                 'name' => 'role',
                 'display_name' => '角色管理',
                 'description' => '角色相關',
-                'sort' => 9,
+                'sort' => 10,
                 'is_active' => true,
             ],
             [
                 'name' => 'permission',
                 'display_name' => '權限管理',
                 'description' => '權限相關',
-                'sort' => 10,
+                'sort' => 11,
                 'is_active' => true,
             ],
         ];
@@ -150,6 +157,7 @@ class ProjectDefaultSeeder extends Seeder
         $permissionGroupIds  = PermissionGroup::pluck('id', 'name');
         $dashboardId = $permissionGroupIds['dashboard'];
         $mediaId = $permissionGroupIds['media'];
+        $formId = $permissionGroupIds['form'];
         $indexdId = $permissionGroupIds['index'];
         $categoryId = $permissionGroupIds['category'];
         $postId = $permissionGroupIds['post'];
@@ -173,6 +181,11 @@ class ProjectDefaultSeeder extends Seeder
             ],
             [
                 'permission_group_id' => $mediaId,
+                'name' => 'store media',
+                'display_name' => '媒體庫新增',
+            ],
+            [
+                'permission_group_id' => $mediaId,
                 'name' => 'update media',
                 'display_name' => '媒體庫更新',
             ],
@@ -180,6 +193,21 @@ class ProjectDefaultSeeder extends Seeder
                 'permission_group_id' => $mediaId,
                 'name' => 'delete media',
                 'display_name' => '媒體庫刪除',
+            ],
+            [
+                'permission_group_id' => $formId,
+                'name' => 'view form',
+                'display_name' => '聯絡表單檢視',
+            ],
+            [
+                'permission_group_id' => $formId,
+                'name' => 'update form',
+                'display_name' => '聯絡表單更新',
+            ],
+            [
+                'permission_group_id' => $formId,
+                'name' => 'delete form',
+                'display_name' => '聯絡表單刪除',
             ],
             [
                 'permission_group_id' => $indexdId,
@@ -336,6 +364,7 @@ class ProjectDefaultSeeder extends Seeder
         $guestRole->syncPermissions([
             'view dashboard',
             'view media',
+            'view form',
             'view index',
             'view category',
             'view post',
@@ -349,6 +378,7 @@ class ProjectDefaultSeeder extends Seeder
         $permissionIds  = Permission::pluck('id', 'name');
         $viewDashboardId = $permissionIds['view dashboard'];
         $viewMediaId = $permissionIds['view media'];
+        $viewFormId = $permissionIds['view form'];
         $viewIndexId = $permissionIds['view index'];
         $viewCategoryId = $permissionIds['view category'];
         $viewPostId = $permissionIds['view post'];
@@ -382,13 +412,24 @@ class ProjectDefaultSeeder extends Seeder
                 'permission_id' => $viewMediaId,
             ],
 
+            // 聯絡表單
+            [
+                'title' => '聯絡表單',
+                'icon' => 'fas fa-table',
+                'route' => '/form',
+                'parent_id' => null,
+                'sort' => 3,
+                'is_active' => true,
+                'permission_id' => $viewFormId,
+            ],
+
             // 頁面管理
             [
                 'title' => '頁面管理',
                 'icon' => 'fas fa-file-alt',
                 'route' => null,
                 'parent_id' => null,
-                'sort' => 3,
+                'sort' => 4,
                 'is_active' => true,
                 'permission_id' => null,
             ],
@@ -399,7 +440,7 @@ class ProjectDefaultSeeder extends Seeder
                 'icon' => 'fas fa-edit',
                 'route' => null,
                 'parent_id' => null,
-                'sort' => 4,
+                'sort' => 5,
                 'is_active' => true,
                 'permission_id' => null,
             ],
@@ -410,7 +451,7 @@ class ProjectDefaultSeeder extends Seeder
                 'icon' => 'fas fa-server',
                 'route' => null,
                 'parent_id' => null,
-                'sort' => 5,
+                'sort' => 6,
                 'is_active' => true,
                 'permission_id' => null,
             ],
@@ -421,7 +462,7 @@ class ProjectDefaultSeeder extends Seeder
                 'icon' => 'fas fa-user-group',
                 'route' => null,
                 'parent_id' => null,
-                'sort' => 6,
+                'sort' => 7,
                 'is_active' => true,
                 'permission_id' => null,
             ],

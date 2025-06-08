@@ -26,7 +26,7 @@ class MediaApiController extends Controller
 
         // 取得預設資料夾
         $folders = MediaFolder::root()->default()->orderBy('name')->get();
-        Log::info($folders);
+        
         return response()->json([
             'folders' => $folders,
             'files' => [],
