@@ -69,7 +69,20 @@ Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
 
 
     // 文章管理
-
+    Route::prefix('post')->group(function () {
+        Route::get('/category', [AdminController::class, 'index'])->name('post.category');
+        Route::get('/category/create', [AdminController::class, 'create'])->name('post.category.create');
+        Route::post('/category', [AdminController::class, 'store'])->name('post.category.store');
+        Route::get('/category/edit/{id}', [AdminController::class, 'edit'])->name('post.category.edit');
+        Route::put('/category/update/{id}', [AdminController::class, 'update'])->name('post.category.update');
+        Route::delete('/category/destroy/{id}', [AdminController::class, 'destroy'])->name('post.category.destroy');
+        Route::get('/article', [AdminController::class, 'index'])->name('post.article');
+        Route::get('/article/create', [AdminController::class, 'create'])->name('post.article.create');
+        Route::post('/article', [AdminController::class, 'store'])->name('post.article.store');
+        Route::get('/article/edit/{id}', [AdminController::class, 'edit'])->name('post.article.edit');
+        Route::put('/article/update/{id}', [AdminController::class, 'update'])->name('post.article.update');
+        Route::delete('/article/destroy/{id}', [AdminController::class, 'destroy'])->name('post.article.destroy');
+    });
 
     // 網站管理
     Route::prefix('system')->group(function () {

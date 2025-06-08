@@ -12,7 +12,7 @@ class ContactFormApiController extends Controller
     public function show(Request $request, $id)
     {
         $form = ContactForm::findOrFail($id);
-        Log::info($form);
+
         // 標記為已讀（如果尚未）
         if (!$form->is_read) {
             $form->markAsRead();
