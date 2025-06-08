@@ -61,9 +61,9 @@ Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
     // 表單管理
     Route::prefix('form')->group(function () {
         Route::get('/', [ContactFormController::class, 'index'])->name('form.index');
-        Route::get('/show', [ContactFormController::class, 'show'])->name('form.show');
         Route::delete('/{id}', [ContactFormController::class, 'destroy'])->name('form.destroy');
     });
+    
 
     // 頁面管理
 

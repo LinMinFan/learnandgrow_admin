@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\MediaApiController;
+use App\Http\Controllers\Api\ContactFormApiController;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,3 +22,4 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::get('/media', [MediaApiController::class, 'index'])->name('api.media.index');
 Route::get('/media/{id}', [MediaApiController::class, 'show'])->name('api.media.show');
+Route::get('/form/show/{id}', [ContactFormApiController::class, 'show'])->name('api.form.show');

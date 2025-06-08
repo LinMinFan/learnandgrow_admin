@@ -6,18 +6,23 @@ import cloneDeep from 'lodash/cloneDeep'
 import { DataTable } from 'simple-datatables'
 import 'simple-datatables/dist/style.css'
 import ConfirmDialog from '@/Components/ConfirmDialog.vue';
+import ContactFormModal from '@/Components/ContactForm/ContactFormModal.vue'
+import { useTopGlobalNotify } from '@/Composables/useTopGlobalNotify'
 import axios from 'axios'
 
 const props = defineProps({
     contactForm: Array,
 })
 
+const { errorNotify, successNotify } = useTopGlobalNotify()
 const contactForm = ref(cloneDeep(props.contactForm))
 const tableRef = ref(null)
 let datatableInstance = null;
 
 const formToDelete = ref(null);
 const showDeleteConfirm = ref(false);
+const showDetailModal = ref(false)
+const selectedForm = ref(null)
 
 const formatDate = (dateStr) => {
     const date = new Date(dateStr)
@@ -27,11 +32,57 @@ const formatDate = (dateStr) => {
     return `${yyyy}/${mm}/${dd}`
 }
 
+const handleViewClick = async (e) => {
+    const target = e.target.closest('[data-action="view"]');
+    if (!target) return;
+
+    try {
+        const id = parseInt(target.getAttribute('data-id'));
+        const form = contactForm.value.find(f => f.id === id)
+        if (!form) return
+
+        const res = await axios.get(route('api.form.show', {id}))
+
+        // 更新 message（避免多次開窗都重複請求，可加快彈窗顯示）
+        form.message = res.data.message
+
+        // 標記為已讀（更新前端狀態）
+        if (!form.is_read) {
+            form.is_read = true
+
+            updateReadStatusInDOM(id, true)
+        }
+
+        selectedForm.value = form
+        showDetailModal.value = true
+
+    } catch (err) {
+        errorNotify('無法載入留言內容，請稍後再試')
+    }
+}
+
+const updateReadStatusInDOM = (formId, isRead) => {
+    const row = tableRef.value.querySelector(`tr[data-form-id="${formId}"]`)
+    if (row) {
+        const readStatusCell = row.querySelector('.read-status-cell')
+        if (readStatusCell) {
+            readStatusCell.textContent = isRead ? '已讀取' : '未讀取'
+        }
+    }
+}
+
+const closeModal = () => {
+    showDetailModal.value = false
+    selectedForm.value = null
+}
+
 const handleConfirmDelete = () => {
     if (!formToDelete.value) return;
     showDeleteConfirm.value = false;
+    const formId = formToDelete.value.id;
+
     axios
-        .delete(route('form.destroy', { id: formToDelete.value.id }))
+        .delete(route('form.destroy', { id: formId }))
         .then((res) => {
             formToDelete.value = null
             router.visit(route('form.index'), {
@@ -59,9 +110,9 @@ const handleDeleteClick = (e) => {
     if (target) {
         const id = parseInt(target.getAttribute('data-id'));
         const subject = target.getAttribute('data-name');
-        const contactForm = contactForm.value.find(f => f.id === id);
-        if (contactForm) {
-            formToDelete.value = contactForm;
+        const formItem = contactForm.value.find(f => f.id === id);
+        if (formItem) {
+            formToDelete.value = formItem;
             showDeleteConfirm.value = true;
         }
     }
@@ -82,6 +133,7 @@ const initDataTable = () => {
 
         // 加上事件代理，處理刪除按鈕點擊
         tableRef.value.addEventListener('click', handleDeleteClick);
+        tableRef.value.addEventListener('click', handleViewClick);
     }
 }
 
@@ -89,6 +141,7 @@ const destroyDataTable = () => {
     // 移除事件監聽
     if (tableRef.value) {
         tableRef.value.removeEventListener('click', handleDeleteClick);
+        tableRef.value.removeEventListener('click', handleViewClick);
     }
 
     // 銷毀 DataTable 實例（視 DataTable 套件是否提供 destroy 方法）
@@ -118,6 +171,9 @@ onUnmounted(destroyDataTable)
                     <thead class="text-xs uppercase bg-gray-100 text-gray-700">
                         <tr>
                             <th class="px-4 py-3 border border-gray-300 bg-gray-100 text-xs uppercase text-gray-700">
+                                編號
+                            </th>
+                            <th class="px-4 py-3 border border-gray-300 bg-gray-100 text-xs uppercase text-gray-700">
                                 主題
                             </th>
                             <th class="px-4 py-3 border border-gray-300 bg-gray-100 text-xs uppercase text-gray-700">
@@ -144,8 +200,12 @@ onUnmounted(destroyDataTable)
                         <tr
                             v-for="formData in contactForm"
                             :key="formData.id"
+                            :data-form-id="formData.id"
                             class="border-b hover:bg-gray-50 transition-colors"
                         >
+                            <td class="px-4 py-3 font-medium border border-gray-300">
+                                {{ formData.id }}
+                            </td>
                             <td class="px-4 py-3 font-medium border border-gray-300">
                                 {{ formData.subject }}
                             </td>
@@ -158,21 +218,23 @@ onUnmounted(destroyDataTable)
                             <td class="px-4 py-3 font-medium border border-gray-300">
                                 {{ formData.phone }}
                             </td>
-                            <td class="px-4 py-3 font-medium border border-gray-300">
-                                {{ formData.is_read }}
+                            <td class="px-4 py-3 font-medium border border-gray-300 read-status-cell">
+                                {{ formData.is_read ? '已讀取' : '未讀取' }}
                             </td>
                             <td class="px-4 py-3 font-medium border border-gray-300">
                                 {{ formatDate(formData.created_at) }}
                             </td>
                             <td class="px-4 py-3 font-medium border border-gray-300">
                                 <div class="flex justify-center space-x-2">
-                                    <Link
-                                        :href="route('form.show', formData.id)"
+                                    <!-- 詳細按鈕（改為觸發彈窗） -->
+                                    <button
                                         class="p-2 rounded hover:bg-blue-100 text-blue-600"
                                         title="詳細"
+                                        data-action="view"
+                                        :data-id="formData.id"
                                     >
-                                        <i class="fas fa-pen-to-square"></i>
-                                    </Link>
+                                        <i class="fas fa-eye"></i>
+                                    </button>
                                     <!-- 刪除按鈕 -->
                                     <button 
                                         :data-id="formData.id"
@@ -189,6 +251,12 @@ onUnmounted(destroyDataTable)
                     </tbody>
                 </table>
             </div>
+            <!-- 詳細內容 -->
+            <ContactFormModal
+                :show="showDetailModal"
+                :data="selectedForm"
+                @close="closeModal"
+            />
             <!-- 確認對話框 -->
             <ConfirmDialog
                 v-if="formToDelete"

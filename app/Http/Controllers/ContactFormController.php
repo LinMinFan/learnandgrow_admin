@@ -37,21 +37,6 @@ class ContactFormController extends Controller
         ]);
     }
 
-    // 顯示詳細內容
-    public function show(Request $request, $id)
-    {
-        $contactForm = ContactForm::findOrFail($id);
-
-        // 標記為已讀
-        if (!$contactForm->is_read) {
-            $contactForm->markAsRead();
-        }
-
-        return Inertia::render('Form/Show', [
-            'message' => $contactForm
-        ]);
-    }
-
     // 刪除
     public function destroy(Request $request, $id)
     {
@@ -59,7 +44,6 @@ class ContactFormController extends Controller
 
         $contactForm->delete();
 
-        return redirect()->route('admin.contact-messages.index')
-            ->with('success', '聯絡表單已刪除');
+        return response()->json(['message' => '表單刪除成功'], 200);
     }
 }
