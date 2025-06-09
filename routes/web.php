@@ -14,6 +14,7 @@ use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ContactFormController;
+use App\Http\Controllers\CategoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -70,12 +71,14 @@ Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
 
     // 文章管理
     Route::prefix('post')->group(function () {
-        Route::get('/category', [AdminController::class, 'index'])->name('post.category');
-        Route::get('/category/create', [AdminController::class, 'create'])->name('post.category.create');
-        Route::post('/category', [AdminController::class, 'store'])->name('post.category.store');
-        Route::get('/category/edit/{id}', [AdminController::class, 'edit'])->name('post.category.edit');
-        Route::put('/category/update/{id}', [AdminController::class, 'update'])->name('post.category.update');
-        Route::delete('/category/destroy/{id}', [AdminController::class, 'destroy'])->name('post.category.destroy');
+        Route::get('/category', [CategoryController::class, 'index'])->name('post.category');
+        Route::get('/category/create', [CategoryController::class, 'create'])->name('post.category.create');
+        Route::post('/category', [CategoryController::class, 'store'])->name('post.category.store');
+        Route::get('/category/edit/{id}', [CategoryController::class, 'edit'])->name('post.category.edit');
+        Route::put('/category/update/{id}', [CategoryController::class, 'update'])->name('post.category.update');
+        Route::delete('/category/destroy/{id}', [CategoryController::class, 'destroy'])->name('post.category.destroy');
+        Route::post('/category/sort', [CategoryController::class, 'sort'])->name('post.category.sort');
+
         Route::get('/article', [AdminController::class, 'index'])->name('post.article');
         Route::get('/article/create', [AdminController::class, 'create'])->name('post.article.create');
         Route::post('/article', [AdminController::class, 'store'])->name('post.article.store');
@@ -88,12 +91,14 @@ Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
     Route::prefix('system')->group(function () {
         Route::get('/config', [ConfigController::class, 'config'])->name('system.config');
         Route::put('/config', [ConfigController::class, 'update'])->name('system.config.update');
+        
         Route::get('/menu', [MenuController::class, 'index'])->name('system.menu');
         Route::get('/menu/create', [MenuController::class, 'create'])->name('system.menu.create');
         Route::post('/menu', [MenuController::class, 'store'])->name('system.menu.store');
         Route::get('/menu/edit/{id}', [MenuController::class, 'edit'])->name('system.menu.edit');
         Route::put('/menu/update/{id}', [MenuController::class, 'update'])->name('system.menu.update');
         Route::delete('/menu/destroy/{id}', [MenuController::class, 'destroy'])->name('system.menu.destroy');
+        Route::post('/menu/sort', [MenuController::class, 'sort'])->name('system.menu.sort');
     });
 
     // 角色和權限

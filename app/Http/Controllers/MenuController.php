@@ -163,10 +163,18 @@ class MenuController extends Controller
         $sorted = $request->input('sorted');
 
         foreach ($sorted as $item) {
-            Menu::where('id', $item['id'])->update([
-                'sort' => $item['sort'],
-                'parent_id' => $item['parent_id'] == 0 ? null : $item['parent_id'],
-            ]);
+            $menu = Menu::find($item['id']);
+    
+            $newParentId = $item['parent_id'] == 0 ? null : $item['parent_id'];
+            $newSortOrder = $item['sort'];
+    
+            // 只有在實際資料不同時才更新
+            if ($menu->sort != $newSortOrder || $menu->parent_id != $newParentId) {
+                $menu->update([
+                    'sort' => $newSortOrder,
+                    'parent_id' => $newParentId,
+                ]);
+            }
         }
     
         return response()->json(['success' => true], 200);
