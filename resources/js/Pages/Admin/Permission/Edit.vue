@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, watchEffect, onMounted, computed } from 'vue'
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import PermissionForm from '@/Components/PermissionForm.vue'
+import PermissionForm from '@/Components/Form/PermissionForm.vue'
 
 
 const { permissionGroups } = defineProps({

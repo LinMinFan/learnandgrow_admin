@@ -134,25 +134,15 @@ const handleDeleteClick = (category) => {
                             <div class="p-2 handle flex justify-between">
                                 <div>
                                     <strong>{{ category.name }}</strong>
-                                    <span class="ml-2 text-sm text-gray-600">({{ category.children.length || category.description}})</span>
+                                    <span class="ml-2 text-sm text-gray-600">({{ category.children.length }})</span>
                                     <span class="ml-2 text-sm text-gray-600">
                                         ({{ category.is_active ? '顯示' : '不顯示' }})
                                     </span>
                                 </div>
                                 <div class="space-x-2 mr-3">
-                                    <Link
-                                        :href="route('post.category.edit', category.id)"
-                                        class="p-2 rounded hover:bg-blue-100 text-blue-600"
-                                        title="編輯"
-                                    >
-                                        <i class="fas fa-pen-to-square"></i>
-                                    </Link>
-                                    <button 
-                                        class="text-red-600 hover:text-red-800"
-                                        @click.stop="handleDeleteClick(category)"
-                                    >
-                                        <i class="fas fa-trash"></i>
-                                    </button>
+                                    <span class="inline-flex items-center text-sm font-medium text-yellow-800 bg-yellow-200 px-2.5 py-0.5 rounded">
+                                        <i class="fas fa-lock mr-1"></i> 無法編輯
+                                    </span>
                                 </div>
                             </div>
 
@@ -168,8 +158,8 @@ const handleDeleteClick = (category) => {
                                     <div class="ml-4 p-2 bg-blue-100 border-t handle flex justify-between items-center">
                                         <div>
                                             ↳ {{ child.name }}
-                                            <span v-if="child.permission?.display_name" class="ml-2 text-sm text-gray-600">
-                                                / {{ child.permission.display_name }}
+                                            <span :class="{ 'text-gray-400': child.articles_count === 0 }">
+                                                ({{ child.articles_count }})
                                             </span>
                                             <span class="ml-2 text-sm text-gray-600">
                                                 ({{ child.is_active ? '顯示' : '不顯示' }})

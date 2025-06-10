@@ -4,7 +4,7 @@ import AdminLayout from '@/Layouts/AdminLayout.vue'
 import { useForm, router } from '@inertiajs/vue3'
 import cloneDeep from 'lodash/cloneDeep'
 import ConfirmDialog from '@/Components/ConfirmDialog.vue'
-import ConfigField from '@/Components/ConfigField.vue'
+import ConfigField from '@/Components/Form/ConfigField.vue'
 import { useTopGlobalNotify } from '@/Composables/useTopGlobalNotify'
 
 const { successNotify, errorNotify } = useTopGlobalNotify()

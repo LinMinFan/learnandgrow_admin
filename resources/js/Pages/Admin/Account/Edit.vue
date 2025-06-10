@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, watchEffect, onMounted, computed } from 'vue'
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import AccountForm from '@/Components/AccountForm.vue'
+import AccountForm from '@/Components/Form/AccountForm.vue'
 
 
 const { roles } = defineProps({

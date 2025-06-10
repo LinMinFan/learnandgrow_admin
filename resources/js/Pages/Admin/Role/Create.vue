@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, watchEffect, onMounted, computed } from 'vue'
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import RoleForm from '@/Components/RoleForm.vue'
+import RoleForm from '@/Components/Form/RoleForm.vue'
 
 
 const { permissionGroups } = defineProps({

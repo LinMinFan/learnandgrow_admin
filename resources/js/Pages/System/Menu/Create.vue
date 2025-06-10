@@ -1,7 +1,7 @@
 <script setup>
 import { ref, reactive, watchEffect, onMounted, computed } from 'vue'
 import AdminLayout from '@/Layouts/AdminLayout.vue';
-import MenuForm from '@/Components/MenuForm.vue'
+import MenuForm from '@/Components/Form/MenuForm.vue'
 
 
 const { parents, permissions } = defineProps({
