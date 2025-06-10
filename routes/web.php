@@ -15,6 +15,7 @@ use App\Http\Controllers\ConfigController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ContactFormController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ArticleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -79,12 +80,12 @@ Route::middleware(['auth', 'verified', 'menu.permission'])->group(function () {
         Route::delete('/category/destroy/{id}', [CategoryController::class, 'destroy'])->name('post.category.destroy');
         Route::post('/category/sort', [CategoryController::class, 'sort'])->name('post.category.sort');
 
-        Route::get('/article', [AdminController::class, 'index'])->name('post.article');
-        Route::get('/article/create', [AdminController::class, 'create'])->name('post.article.create');
-        Route::post('/article', [AdminController::class, 'store'])->name('post.article.store');
-        Route::get('/article/edit/{id}', [AdminController::class, 'edit'])->name('post.article.edit');
-        Route::put('/article/update/{id}', [AdminController::class, 'update'])->name('post.article.update');
-        Route::delete('/article/destroy/{id}', [AdminController::class, 'destroy'])->name('post.article.destroy');
+        Route::get('/article', [ArticleController::class, 'index'])->name('post.article');
+        Route::get('/article/create', [ArticleController::class, 'create'])->name('post.article.create');
+        Route::post('/article', [ArticleController::class, 'store'])->name('post.article.store');
+        Route::get('/article/edit/{id}', [ArticleController::class, 'edit'])->name('post.article.edit');
+        Route::put('/article/update/{id}', [ArticleController::class, 'update'])->name('post.article.update');
+        Route::delete('/article/destroy/{id}', [ArticleController::class, 'destroy'])->name('post.article.destroy');
     });
 
     // 網站管理
