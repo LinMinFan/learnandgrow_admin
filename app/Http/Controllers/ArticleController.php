@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Category;
 use App\Models\Article;
+use App\Models\User;
+use App\Http\Requests\StoreArticleRequest;
 use Illuminate\Support\Facades\Log;
 use App\Http\Traits\RedirectWithFlashTrait;
 use Illuminate\Support\Facades\Hash;
@@ -22,11 +24,11 @@ class ArticleController extends Controller
             return $response;
         };
         
-        $Categories = Category::with('articles')
+        $categories = Category::with('articles')
             ->orderBy('sort_order','asc')
             ->get();
 
-        $articles = $Categories->flatMap(function ($group) {
+        $articles = $categories->flatMap(function ($group) {
             return $group->articles->map(function ($article) use ($group) {
                 return [
                     'id' => $article->id,
@@ -47,5 +49,71 @@ class ArticleController extends Controller
         })->values(); // 重新 index keys，避免前端索引混亂
 
         return Inertia::render('Post/Article/Index', compact('articles'));
+    }
+
+    public function create()
+    {
+        $categories = Category::whereNotNull('parent_id')->get();
+
+        return Inertia::render('Post/Article/Create', compact('categories'));
+    }
+
+    public function store(StoreArticleRequest $request)
+    {
+        DB::beginTransaction();
+        try {
+            Article::create($request->validated());
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+
+        return response()->json(['message' => '文章新增成功'], 200);
+    }
+
+    public function edit($id)
+    {
+        $categories = Category::whereNotNull('parent_id')->get();
+
+        $article = Article::with(['category','author'])->findOrFail($id);
+
+        return Inertia::render('Post/Article/Edit', compact([
+                'categories',
+                'article',
+            ]));
+    }
+
+    public function update(StoreArticleRequest $request, $id)
+    {
+        $article = Article::findOrFail($id);
+
+        DB::beginTransaction();
+        try {
+            $article->update($request->validated());
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+
+        return response()->json(['message' => '文章更新成功'], 200);
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+        try {
+            Article::findOrFail($id)->delete();
+
+            DB::commit();
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return response()->json(['message' => $e->getMessage()], 400);
+        }
+
+        return response()->json(['message' => '文章刪除成功'], 200);
     }
 }
