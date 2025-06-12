@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 use App\Http\Traits\RedirectWithFlashTrait;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class ArticleController extends Controller
 {
@@ -20,7 +21,7 @@ class ArticleController extends Controller
     public function index(Request $request)
     {
         // 如果 URL 有成功參數，設定到 session flash
-        if ($response = $this->redirectIfHasFlashParams($request, 'admin.account')) {
+        if ($response = $this->redirectIfHasFlashParams($request, 'post.article')) {
             return $response;
         };
         
@@ -62,7 +63,14 @@ class ArticleController extends Controller
     {
         DB::beginTransaction();
         try {
-            Article::create($request->validated());
+            $user = auth()->user();
+            $articleData = $request->validated();
+            $articleData['author_id'] = $user->id;
+            if ($articleData['status'] == 'published') {
+                $articleData['published_at'] = Carbon::now();
+            }
+
+            Article::create($articleData);
 
             DB::commit();
         } catch (\Exception $e) {
@@ -78,6 +86,8 @@ class ArticleController extends Controller
         $categories = Category::whereNotNull('parent_id')->get();
 
         $article = Article::with(['category','author'])->findOrFail($id);
+        $currentCategory = $article->category;
+        $article->category_id = $currentCategory ? $currentCategory : null;
 
         return Inertia::render('Post/Article/Edit', compact([
                 'categories',
@@ -91,6 +101,10 @@ class ArticleController extends Controller
 
         DB::beginTransaction();
         try {
+            if ($article['status'] == 'published' && $article->published_at == null) {
+                $article['published_at'] = Carbon::now();
+            }
+
             $article->update($request->validated());
 
             DB::commit();

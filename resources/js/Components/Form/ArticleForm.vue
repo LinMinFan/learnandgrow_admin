@@ -7,6 +7,7 @@ import { useTopGlobalNotify } from '@/Composables/useTopGlobalNotify'
 import { submitFormWithNotify } from '@/Composables/formAxiosWithNotify'
 import MediaModal from '@/Components/Media/MediaModal.vue'
 import { useMediaPicker } from '@/Composables/Media/useMediaPicker'
+import TipTapEditor from '@/Components/TipTap/TipTapEditor.vue'
 
 const props = defineProps({
     type: {
@@ -83,7 +84,7 @@ const submit = () => {
     }
 
     const payload = {
-        category_id: form.category_id,
+        category_id: form.category_id?.id,
         title: form.title,
         slug: form.slug,
         excerpt: form.excerpt,
@@ -197,11 +198,17 @@ const submit = () => {
                 {{ form.errors.excerpt }}
             </div>
         </div>
+
+        <!-- 使用 TipTap 編輯器替換原本的 textarea -->
         <div>
             <label class="block font-bold mb-1">
                 文章內容
             </label>
-            <textarea v-model="form.content" cols="85" rows="10"></textarea>
+            <TipTapEditor
+                v-model="form.content" 
+                placeholder="開始輸入文章內容..."
+                class="min-h-[300px]"
+            />
             <div v-if="form.errors.content" class="text-red-500 text-sm mt-1">
                 {{ form.errors.content }}
             </div>
