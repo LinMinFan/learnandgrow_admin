@@ -20,7 +20,7 @@ class ConfigsTableSeeder extends Seeder
             ['key' => 'og-meta', 'value' => [
                 'title' => '網站名稱',
                 'description' => '網站描述',
-                'image' => '/images/og-image.jpg',
+                'image' => '',
             ]],
             ['key' => 'site-description', 'value' => [
                 'text' => '網站描述'
@@ -35,10 +35,10 @@ class ConfigsTableSeeder extends Seeder
                 ]
             ],
             ['key' => 'site-logo', 'value' => [
-                'url' => '/images/logo.png',
+                'url' => '',
             ]],
             ['key' => 'favicon', 'value' => [
-                'url' => '/favicon.ico',
+                'url' => '',
             ]],
             ['key' => 'contact-email', 'value' => [
                 'text' => env('SITE_MAIL', 'support@example.com')
