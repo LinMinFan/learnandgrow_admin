@@ -4,7 +4,7 @@ import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
     server: {
-        host: 'learnandgrow_admin', // Apache VirtualHost 名稱
+        host: '127.0.0.1', // Apache VirtualHost 名稱
         port: 5173,                 // 預設即可
         strictPort: true,
     },
