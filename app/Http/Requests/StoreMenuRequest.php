@@ -37,7 +37,8 @@ class StoreMenuRequest extends FormRequest
                 'string',
             ],
             'route' => [
-                Rule::requiredIf(fn () => !is_null($this->input('parent_id'))),
+                Rule::requiredIf(fn() => !is_null($this->input('parent_id'))),
+                'nullable',
                 'string',
                 Rule::unique('menus', 'route')
                     ->ignore($menuId)

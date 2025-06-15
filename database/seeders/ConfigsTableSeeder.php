@@ -14,24 +14,24 @@ class ConfigsTableSeeder extends Seeder
 
         $defaultConfigs = [
             ['key' => 'site-name', 'value' => [
-                'text' => '網站名稱'
+                'text' => '工程師的自我修養'
                 ]
             ],
             ['key' => 'og-meta', 'value' => [
-                'title' => '網站名稱',
-                'description' => '網站描述',
+                'title' => '工程師的自我修養',
+                'description' => '作品集,技術分享,開發筆記,閒聊雜談',
                 'image' => '',
             ]],
             ['key' => 'site-description', 'value' => [
-                'text' => '網站描述'
+                'text' => '作品集,技術分享,開發筆記,閒聊雜談'
                 ]
             ],
             ['key' => 'site-keywords', 'value' => [
-                'text' => '網站關鍵字'
+                'text' => 'php,laravel,javascript,vue,redis,linux'
                 ]
             ],
             ['key' => 'site-author', 'value' => [
-                'text' => '網站擁有者'
+                'text' => 'jack lin'
                 ]
             ],
             ['key' => 'site-logo', 'value' => [
@@ -41,25 +41,25 @@ class ConfigsTableSeeder extends Seeder
                 'url' => '',
             ]],
             ['key' => 'contact-email', 'value' => [
-                'text' => env('SITE_MAIL', 'support@example.com')
+                'text' => env('SITE_MAIL', 'cvse00566@gmail.com')
                 ]
             ],
             ['key' => 'contact-phone', 'value' => [
-                'text' => env('SITE_PHONE', '02-1234-5678')
+                'text' => env('SITE_PHONE', '0939646359')
                 ]
             ],
             ['key' => 'address', 'value' => [
-                'text' => env('SITE_ADDRESS', '地址')
+                'text' => env('SITE_ADDRESS', '新北市新莊區')
                 ]
             ],
             ['key' => 'copyright', 'value' => [
                 'text' => '© 2025 LIN MIN FAN. All rights reserved.'
             ]],
             ['key' => 'social-facebook', 'value' => [
-                'text' => 'https://facebook.com/yourpage'
+                'text' => ''
             ]],
             ['key' => 'social-instagram', 'value' => [
-                'text' => 'https://instagram.com/yourpage'
+                'text' => ''
             ]],
             ['key' => 'analytics-tracking', 'value' => [
                 'text' => '', // 可以再擴充 gtm 或其他追蹤碼

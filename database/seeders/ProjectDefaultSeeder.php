@@ -430,7 +430,7 @@ class ProjectDefaultSeeder extends Seeder
                 'route' => null,
                 'parent_id' => null,
                 'sort' => 4,
-                'is_active' => true,
+                'is_active' => false,
                 'permission_id' => null,
             ],
 
@@ -488,7 +488,7 @@ class ProjectDefaultSeeder extends Seeder
                 'route' => '/front/index-setting',
                 'parent_id' => $menuIndexdId,
                 'sort' => 1,
-                'is_active' => true,
+                'is_active' => false,
                 'permission_id' => $viewIndexId,
             ],
             [
