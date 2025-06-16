@@ -3,9 +3,12 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use App\Traits\PermissionAuthorizer;
 
 class StorePermissionGroupRequest extends FormRequest
 {
+    use PermissionAuthorizer;
+    
     /**
      * Determine if the user is authorized to make this request.
      */
