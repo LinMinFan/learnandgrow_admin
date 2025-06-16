@@ -6,8 +6,25 @@ import StarterKit from '@tiptap/starter-kit'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
+import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
+import { createLowlight } from 'lowlight'
 import MediaModal from '@/Components/Media/MediaModal.vue'
 import { useMediaPicker } from '@/Composables/Media/useMediaPicker'
+
+// 導入需要的語言
+import javascript from 'highlight.js/lib/languages/javascript'
+import php from 'highlight.js/lib/languages/php'
+import json from 'highlight.js/lib/languages/json'
+import sql from 'highlight.js/lib/languages/sql'
+
+// 創建 lowlight 實例
+const lowlight = createLowlight()
+
+// 註冊語言
+lowlight.register('javascript', javascript)
+lowlight.register('php', php)
+lowlight.register('json', json)
+lowlight.register('sql', sql)
 
 const props = defineProps({
     modelValue: {
@@ -41,6 +58,7 @@ onMounted(() => {
         extensions: [
             StarterKit.configure({
                 // 確保所有功能都開啟
+                codeBlock: false,
                 heading: {
                     levels: [1, 2, 3, 4, 5, 6],
                 },
@@ -56,6 +74,13 @@ onMounted(() => {
                     HTMLAttributes: {
                         class: 'editor-blockquote',
                     },
+                },
+            }),
+            CodeBlockLowlight.configure({
+                lowlight,
+                defaultLanguage: 'javascript',
+                HTMLAttributes: {
+                    class: 'editor-code-block',
                 },
             }),
             Image.configure({
@@ -110,6 +135,21 @@ watch(() => props.placeholder, (newValue) => {
         placeholderExt.options.placeholder = newValue;
     }
 })
+
+// 添加代碼區塊
+const addCodeBlock = () => {
+    if (editor.value) {
+        editor.value.chain().focus().toggleCodeBlock().run()
+    }
+}
+
+// 設定代碼區塊語言
+const setCodeBlockLanguage = () => {
+    const language = window.prompt('請輸入程式語言 (javascript, python, php, html, css, etc.):', 'javascript')
+    if (language && editor.value) {
+        editor.value.chain().focus().setCodeBlock({ language }).run()
+    }
+}
 
 // 添加圖片 - 使用 MediaModal
 const addImageFromModal = () => {
@@ -295,6 +335,35 @@ const runCommand = (command) => {
 
             <div class="toolbar-divider"></div>
 
+            <!-- 代碼區塊 -->
+            <button 
+                @click="addCodeBlock"
+                :class="{ 'is-active': isActive('codeBlock') }" 
+                type="button" 
+                class="toolbar-btn"
+                title="代碼區塊"
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M8 3a1 1 0 0 0-1 1v4a1 1 0 0 1-1 1H4a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 0 1-1v-6a1 1 0 0 0-1-1h-2a1 1 0 0 1-1-1V4a1 1 0 0 0-1-1H8zM7 8V5h10v3a3 3 0 0 0 3 3v4a3 3 0 0 0-3 3v3H7v-3a3 3 0 0 0-3-3v-4a3 3 0 0 0 3-3z" />
+                    <path d="M9.5 10.5L7 13l2.5 2.5M14.5 10.5L17 13l-2.5 2.5" />
+                </svg>
+            </button>
+
+            <button 
+                @click="setCodeBlockLanguage" 
+                v-if="isActive('codeBlock')"
+                type="button" 
+                class="toolbar-btn"
+                title="設定程式語言"
+            >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M7.5 5.6L10 7 8.6 8.5 7 10 5.4 8.5 4 7l1.4-1.5L7 5.6zm6.9 1.8l1.4 1.25L14.4 10 13 8.5l-.9-1z"/>
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM7.07 18.28c.43-.9 3.05-1.78 4.93-1.78s4.51.88 4.93 1.78C15.57 19.36 13.86 20 12 20s-3.57-.64-4.93-1.72zm11.29-1.45c-1.43-1.74-4.9-2.33-6.36-2.33s-4.93.59-6.36 2.33C4.62 15.49 4 13.82 4 12c0-4.41 3.59-8 8-8s8 3.59 8 8c0 1.82-.62 3.49-1.64 4.83z"/>
+                </svg>
+            </button>
+
+            <div class="toolbar-divider"></div>
+
             <!-- 媒體 -->
             <button 
                 @click="addImageFromModal" 
@@ -475,6 +544,92 @@ const runCommand = (command) => {
 
 :deep(.ProseMirror pre code) {
     @apply bg-transparent p-0 text-gray-800;
+}
+
+/* 代碼區塊樣式 */
+:deep(.ProseMirror pre) {
+    @apply bg-gray-900 text-gray-100 p-4 rounded-lg overflow-x-auto my-4;
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+:deep(.editor-code-block) {
+    @apply bg-gray-900 text-gray-100 p-0 rounded-lg overflow-hidden my-4;
+    position: relative;
+}
+
+:deep(.editor-code-block pre) {
+    @apply bg-transparent p-4 m-0;
+}
+
+:deep(.editor-code-block code) {
+    @apply bg-transparent p-0 text-gray-100;
+    color: inherit !important;
+}
+
+/* Highlight.js 語法高光樣式 */
+:deep(.hljs) {
+    background: #1f2937 !important;
+    color: #f9fafb !important;
+}
+
+:deep(.hljs-keyword),
+:deep(.hljs-selector-tag),
+:deep(.hljs-literal),
+:deep(.hljs-section),
+:deep(.hljs-link) {
+    color: #ec4899 !important;
+}
+
+:deep(.hljs-function .hljs-keyword) {
+    color: #8b5cf6 !important;
+}
+
+:deep(.hljs-subst) {
+    color: #f9fafb !important;
+}
+
+:deep(.hljs-string),
+:deep(.hljs-title),
+:deep(.hljs-name),
+:deep(.hljs-type),
+:deep(.hljs-attribute),
+:deep(.hljs-symbol),
+:deep(.hljs-bullet),
+:deep(.hljs-addition),
+:deep(.hljs-variable),
+:deep(.hljs-template-tag),
+:deep(.hljs-template-variable) {
+    color: #10b981 !important;
+}
+
+:deep(.hljs-comment),
+:deep(.hljs-quote),
+:deep(.hljs-deletion),
+:deep(.hljs-meta) {
+    color: #6b7280 !important;
+}
+
+:deep(.hljs-keyword),
+:deep(.hljs-selector-tag),
+:deep(.hljs-literal),
+:deep(.hljs-title),
+:deep(.hljs-section),
+:deep(.hljs-doctag),
+:deep(.hljs-type),
+:deep(.hljs-name),
+:deep(.hljs-strong) {
+    font-weight: bold;
+}
+
+:deep(.hljs-number) {
+    color: #f59e0b !important;
+}
+
+:deep(.hljs-regexp),
+:deep(.hljs-link) {
+    color: #06b6d4 !important;
 }
 
 /* 段落間距 */
