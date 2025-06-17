@@ -90,6 +90,8 @@ class MediaController extends Controller
 
     public function store(Request $request)
     {
+        $this->throwUnless('media', 'create');
+
         $request->validate([
             'files.*' => 'required|file|mimes:jpg,jpeg,png,gif,pdf|max:10240',
             'folder_id' => 'required|exists:media_folders,id'
@@ -153,6 +155,8 @@ class MediaController extends Controller
 
     public function destroy(Request $request, $id)
     {
+        $this->throwUnless('media', 'delete');
+
         $request->validate([
             'folder_id' => 'required|exists:media_folders,id'
         ]);
@@ -179,6 +183,8 @@ class MediaController extends Controller
 
     public function deleteSelected(Request $request)
     {
+        $this->throwUnless('media', 'delete');
+        
         $request->validate([
             'selected_items' => 'required|array|min:1',
             'selected_items.*.type' => 'required|in:file',
