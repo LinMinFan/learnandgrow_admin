@@ -9,7 +9,8 @@ use App\Models\Article;
 use App\Models\User;
 use App\Http\Requests\StoreArticleRequest;
 use Illuminate\Support\Facades\Log;
-use App\Http\Traits\RedirectWithFlashTrait;
+use App\Traits\RedirectWithFlashTrait;
+use App\Traits\PermissionAuthorizer;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -17,6 +18,7 @@ use Carbon\Carbon;
 class ArticleController extends Controller
 {
     use RedirectWithFlashTrait;
+    use PermissionAuthorizer;
 
     public function index(Request $request)
     {
@@ -118,6 +120,8 @@ class ArticleController extends Controller
 
     public function destroy($id)
     {
+        $this->throwUnless('post', 'delete');
+
         DB::beginTransaction();
         try {
             Article::findOrFail($id)->delete();

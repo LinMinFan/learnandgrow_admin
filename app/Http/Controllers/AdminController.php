@@ -8,13 +8,15 @@ use App\Models\User;
 use App\Models\Role;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreAccountRequest;
-use App\Http\Traits\RedirectWithFlashTrait;
+use App\Traits\RedirectWithFlashTrait;
+use App\Traits\PermissionAuthorizer;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
 class AdminController extends Controller
 {
     use RedirectWithFlashTrait;
+    use PermissionAuthorizer;
 
     public function index(Request $request)
     {
@@ -100,6 +102,8 @@ class AdminController extends Controller
 
     public function destroy($id)
     {
+        $this->throwUnless('account', 'delete');
+
         DB::beginTransaction();
         try {
             User::findOrFail($id)->delete();

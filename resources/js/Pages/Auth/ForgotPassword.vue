@@ -16,7 +16,13 @@ const form = useForm({
     email: '',
 });
 
+const RESETPASSWORD_ENABLED = false;
+
 const submit = () => {
+    // 關閉非管理員重設密碼
+     if (!RESETPASSWORD_ENABLED) {
+        return;
+    }
     form.post(route('password.email'));
 };
 </script>

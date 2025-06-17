@@ -84,13 +84,14 @@ const submit = () => {
                         </div>
   
                         <div class="flex items-center justify-end mt-4">
-                            <Link
+                            <!-- 關閉非管理員重設密碼 -->
+                            <!-- <Link
                                 v-if="canResetPassword"
                                 :href="route('password.request')"
                                 class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                                 忘記密碼?
-                            </Link>
+                            </Link> -->
 
                             <PrimaryButton class="ms-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                                 登入
@@ -98,7 +99,8 @@ const submit = () => {
                         </div>
                     </form>
                 </div>
-                <div class="bg-gray-100 text-center px-6 py-3">
+                <!-- 關閉非管理員註冊帳號 -->
+                <!-- <div class="bg-gray-100 text-center px-6 py-3">
                     <p class="text-sm">
                         <Link
                             :href="route('register')"
@@ -107,7 +109,7 @@ const submit = () => {
                             建立帳戶
                         </Link>
                     </p>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>

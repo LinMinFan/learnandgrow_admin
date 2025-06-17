@@ -8,12 +8,14 @@ use App\Models\Menu;
 use App\Models\PermissionGroup;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreMenuRequest;
-use App\Http\Traits\RedirectWithFlashTrait;
+use App\Traits\RedirectWithFlashTrait;
+use App\Traits\PermissionAuthorizer;
 use Illuminate\Support\Facades\DB;
 
 class MenuController extends Controller
 {
     use RedirectWithFlashTrait;
+    use PermissionAuthorizer;
 
     public function index(Request $request)
     {
@@ -145,6 +147,8 @@ class MenuController extends Controller
 
     public function destroy($id)
     {
+        $this->throwUnless('menu', 'delete');
+
         DB::beginTransaction();
         try {
             Menu::findOrFail($id)->delete();
@@ -160,6 +164,8 @@ class MenuController extends Controller
 
     public function sort(Request $request)
     {
+        $this->throwUnless('menu', 'update');
+
         $sorted = $request->input('sorted');
 
         foreach ($sorted as $item) {

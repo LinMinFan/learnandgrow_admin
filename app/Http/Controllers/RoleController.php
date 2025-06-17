@@ -10,12 +10,14 @@ use App\Models\Permission;
 use App\Models\PermissionGroup;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreRoleRequest;
-use App\Http\Traits\RedirectWithFlashTrait;
+use App\Traits\RedirectWithFlashTrait;
+use App\Traits\PermissionAuthorizer;
 use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
     use RedirectWithFlashTrait;
+    use PermissionAuthorizer;
 
     public function index(Request $request)
     {
@@ -117,6 +119,8 @@ class RoleController extends Controller
 
     public function destroy($id)
     {
+        $this->throwUnless('role', 'delete');
+
         DB::beginTransaction();
         try {
             Role::findOrFail($id)->delete();

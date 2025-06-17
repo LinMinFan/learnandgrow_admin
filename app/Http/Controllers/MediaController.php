@@ -7,7 +7,8 @@ use Inertia\Inertia;
 use App\Models\MediaFolder;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Support\Facades\Log;
-use App\Http\Traits\RedirectWithFlashTrait;
+use App\Traits\RedirectWithFlashTrait;
+use App\Traits\PermissionAuthorizer;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use App\Services\MediaService;
@@ -15,6 +16,7 @@ use App\Services\MediaService;
 class MediaController extends Controller
 {
     use RedirectWithFlashTrait;
+    use PermissionAuthorizer;
 
     protected $mediaService;
 

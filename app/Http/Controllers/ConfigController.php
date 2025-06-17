@@ -7,12 +7,14 @@ use Inertia\Inertia;
 use App\Models\Config;
 use Illuminate\Support\Facades\Log;
 use App\Http\Requests\StoreAccountRequest;
-use App\Http\Traits\RedirectWithFlashTrait;
+use App\Traits\RedirectWithFlashTrait;
+use App\Traits\PermissionAuthorizer;
 use Illuminate\Support\Facades\DB;
 
 class ConfigController extends Controller
 {
     use RedirectWithFlashTrait;
+    use PermissionAuthorizer;
 
     /**
      * 顯示所有設定（可給後台頁面或 API）
@@ -42,6 +44,8 @@ class ConfigController extends Controller
      */
     public function update(Request $request)
     {
+        $this->throwUnless('system', 'edit');
+
         $data = $request->all();
 
         DB::beginTransaction();

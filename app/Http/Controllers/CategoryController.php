@@ -6,7 +6,8 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Category;
 use Illuminate\Support\Facades\Log;
-use App\Http\Traits\RedirectWithFlashTrait;
+use App\Traits\RedirectWithFlashTrait;
+use App\Traits\PermissionAuthorizer;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreCategoryRequest;
@@ -14,6 +15,7 @@ use App\Http\Requests\StoreCategoryRequest;
 class CategoryController extends Controller
 {
     use RedirectWithFlashTrait;
+    use PermissionAuthorizer;
 
     public function index(Request $request)
     {
@@ -109,6 +111,8 @@ class CategoryController extends Controller
 
     public function destroy($id)
     {
+        $this->throwUnless('category', 'delete');
+
         DB::beginTransaction();
         try {
             Category::findOrFail($id)->delete();

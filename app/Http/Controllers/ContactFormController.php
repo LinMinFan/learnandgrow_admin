@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\ContactForm;
-use App\Http\Traits\RedirectWithFlashTrait;
+use App\Traits\RedirectWithFlashTrait;
+use App\Traits\PermissionAuthorizer;
 use Illuminate\Support\Facades\DB;
 
 class ContactFormController extends Controller
 {
     use RedirectWithFlashTrait;
+    use PermissionAuthorizer;
 
     // 列表頁面
     public function index(Request $request)
@@ -40,6 +42,8 @@ class ContactFormController extends Controller
     // 刪除
     public function destroy(Request $request, $id)
     {
+        $this->throwUnless('form', 'delete');
+
         $contactForm = ContactForm::findOrFail($id);
 
         $contactForm->delete();

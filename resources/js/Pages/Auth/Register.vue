@@ -13,7 +13,13 @@ const form = useForm({
     password_confirmation: '',
 });
 
+const REGISTRATION_ENABLED = false;
+
 const submit = () => {
+    // 關閉非管理員註冊帳號
+     if (!REGISTRATION_ENABLED) {
+        return;
+    }
     form.post(route('register'), {
         onFinish: () => form.reset('password', 'password_confirmation'),
     });

@@ -9,12 +9,14 @@ use App\Models\PermissionGroup;
 use App\Http\Requests\StorePermissionGroupRequest;
 use App\Http\Requests\StorePermissionRequest;
 use Illuminate\Support\Facades\Log;
-use App\Http\Traits\RedirectWithFlashTrait;
+use App\Traits\RedirectWithFlashTrait;
+use App\Traits\PermissionAuthorizer;
 use Illuminate\Support\Facades\DB;
 
 class PermissionController extends Controller
 {
     use RedirectWithFlashTrait;
+    use PermissionAuthorizer;
 
     public function index(Request $request)
     {
@@ -94,6 +96,8 @@ class PermissionController extends Controller
 
     public function destroy($id)
     {
+        $this->throwUnless('permission', 'delete');
+
         DB::beginTransaction();
         try {
             Permission::findOrFail($id)->delete();
