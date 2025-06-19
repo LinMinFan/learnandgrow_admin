@@ -65,21 +65,17 @@ class CategorySeeder extends Seeder
         // 子分類（依照 parent_slug 對應）
         $childCategories = [
             // 技術分享
-            ['name' => '前端技術', 'slug' => 'frontend', 'parent_slug' => 'tech', 'sort_order' => 1],
-            ['name' => '後端技術', 'slug' => 'backend', 'parent_slug' => 'tech', 'sort_order' => 2],
-            ['name' => '資料庫', 'slug' => 'database', 'parent_slug' => 'tech', 'sort_order' => 3],
-            ['name' => 'API 串接', 'slug' => 'api', 'parent_slug' => 'tech', 'sort_order' => 4],
-            ['name' => '安全性', 'slug' => 'security', 'parent_slug' => 'tech', 'sort_order' => 5],
+            ['name' => '後端相關', 'slug' => 'backend', 'parent_slug' => 'tech', 'sort_order' => 1],
+            ['name' => '前端相關', 'slug' => 'frontend', 'parent_slug' => 'tech', 'sort_order' => 2],
+            ['name' => '系統及安全性', 'slug' => 'security', 'parent_slug' => 'tech', 'sort_order' => 3],
 
             // 開發筆記
-            ['name' => '問題解法', 'slug' => 'troubleshoot', 'parent_slug' => 'dev-note', 'sort_order' => 1],
-            ['name' => '開發流程', 'slug' => 'workflow', 'parent_slug' => 'dev-note', 'sort_order' => 2],
-            ['name' => '重構與優化', 'slug' => 'refactor', 'parent_slug' => 'dev-note', 'sort_order' => 3],
-            ['name' => '架構設計', 'slug' => 'architecture', 'parent_slug' => 'dev-note', 'sort_order' => 4],
+            ['name' => '開發流程', 'slug' => 'workflow', 'parent_slug' => 'dev-note', 'sort_order' => 1],
+            ['name' => '重構與優化', 'slug' => 'refactor', 'parent_slug' => 'dev-note', 'sort_order' => 2],
 
             // 工具推薦
-            ['name' => 'laravel 套件', 'slug' => 'laravel-tool', 'parent_slug' => 'tools', 'sort_order' => 1],
-            ['name' => 'js 套件', 'slug' => 'js-tool', 'parent_slug' => 'tools', 'sort_order' => 2],
+            ['name' => '後端套件', 'slug' => 'backend-tool', 'parent_slug' => 'tools', 'sort_order' => 1],
+            ['name' => '前端套件', 'slug' => 'frontend-tool', 'parent_slug' => 'tools', 'sort_order' => 2],
             ['name' => '專案管理', 'slug' => 'project-mgmt', 'parent_slug' => 'tools', 'sort_order' => 3],
             ['name' => 'DevOps 工具', 'slug' => 'devops', 'parent_slug' => 'tools', 'sort_order' => 4],
 
