@@ -204,11 +204,18 @@ const submit = () => {
             <label class="block font-bold mb-1">
                 文章內容
             </label>
-            <TipTapEditor
+            <!-- <TipTapEditor
                 v-model="form.content" 
                 placeholder="開始輸入文章內容..."
                 class="min-h-[300px]"
-            />
+            /> -->
+            <textarea
+                v-model="form.content"
+                placeholder="請輸入文章內容"
+                rows="10"
+                class="form-input w-full"
+            >
+            </textarea>
             <div v-if="form.errors.content" class="text-red-500 text-sm mt-1">
                 {{ form.errors.content }}
             </div>
